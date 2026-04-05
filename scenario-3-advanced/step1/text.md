@@ -59,17 +59,17 @@ kubectl delete httproute bookstore-route -n bookstore 2>/dev/null || true
 
 ## Test the split
 
-Send 20 requests and observe the distribution:
+Send 50 requests and observe the distribution:
 
 ```
 CACERT=/root/.local/share/mkcert/rootCA.pem
-for i in $(seq 1 20); do
+for i in $(seq 1 50); do
   curl -s --cacert $CACERT \
     --resolve bookstore.local:30091:127.0.0.1 \
     https://bookstore.local:30091/ | grep -o '"version":"[^"]*"'
 done | sort | uniq -c
 ```
 
-You should see roughly 18 hits on v1 and 2 on v2. The exact split varies — Traefik distributes at the connection level, not per-request.
+You should see roughly 45 hits on v1 and 5 on v2. Traefik uses probabilistic weighted routing — with only 20 requests there's a ~12% chance of seeing zero v2 hits, so 50 requests gives a reliable demonstration.
 
 Click **Check** to verify the canary route is in place.
