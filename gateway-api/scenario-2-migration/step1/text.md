@@ -14,7 +14,7 @@ You'll install the **standard channel** — all features used in this tutorial a
 ```
 kubectl apply --server-side \
   -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.1/standard-install.yaml
-```
+```{{exec}}
 
 The `--server-side` flag is required because the Gateway API CRD manifests exceed the annotation size limit for client-side apply.
 
@@ -22,7 +22,7 @@ The `--server-side` flag is required because the Gateway API CRD manifests excee
 
 ```
 kubectl get crd | grep gateway.networking.k8s.io
-```
+```{{exec}}
 
 You should see:
 

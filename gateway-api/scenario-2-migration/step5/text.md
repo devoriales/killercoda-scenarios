@@ -14,7 +14,7 @@ The bookstore is currently reachable over plain HTTP. In this step you'll add HT
 ```
 cd /root
 mkcert bookstore.local "*.bookstore.local"
-```
+```{{exec}}
 
 This creates:
 - `bookstore.local+1.pem` — the certificate
@@ -27,19 +27,19 @@ kubectl create secret tls bookstore-tls \
   --cert=/root/bookstore.local+1.pem \
   --key=/root/bookstore.local+1-key.pem \
   -n bookstore
-```
+```{{exec}}
 
 Verify it was created:
 
 ```
 kubectl get secret bookstore-tls -n bookstore
-```
+```{{exec}}
 
 ## Apply the HTTPS Gateway
 
 ```
 kubectl apply -f /root/manifests/03-gateway-api/gateway-https.yaml
-```
+```{{exec}}
 
 This replaces the HTTP-only Gateway with one that has two listeners:
 - `http` on port 8000 (Traefik's internal `web` entryPoint)
@@ -49,19 +49,19 @@ Check both listeners are programmed:
 
 ```
 kubectl get gateway bookstore-gateway -n bookstore -o jsonpath='{.status.listeners}' | jq .
-```
+```{{exec}}
 
 ## Update the HTTPRoute to use HTTPS
 
 ```
 kubectl apply -f /root/manifests/04-httproutes/basic-route.yaml
-```
+```{{exec}}
 
 This route targets `sectionName: https`. Delete the old http-only route:
 
 ```
 kubectl delete httproute bookstore-route -n bookstore
-```
+```{{exec}}
 
 ## Test HTTPS
 
@@ -69,7 +69,7 @@ kubectl delete httproute bookstore-route -n bookstore
 curl -s --cacert /root/.local/share/mkcert/rootCA.pem \
   --resolve bookstore.local:30091:127.0.0.1 \
   https://bookstore.local:30091/health
-```
+```{{exec}}
 
 Expected:
 ```json

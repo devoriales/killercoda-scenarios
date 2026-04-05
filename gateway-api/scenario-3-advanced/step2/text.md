@@ -6,7 +6,7 @@ With a classic Ingress and ingress-nginx, header-based routing requires the `can
 
 ```
 kubectl apply -f /root/manifests/04-httproutes/header-based-route.yaml
-```
+```{{exec}}
 
 The route adds a rule that fires when the request carries `X-API-Version: v2`:
 
@@ -30,7 +30,7 @@ rules:
   - name: bookstore-v2
     port: 80
     weight: 10
-```
+```{{copy}}
 
 Rules are evaluated top-to-bottom. The header match fires first; everything else falls through to the canary split.
 
@@ -49,7 +49,7 @@ curl -s --cacert $CACERT \
   --resolve bookstore.local:30091:127.0.0.1 \
   -H "X-API-Version: v2" \
   https://bookstore.local:30091/api/v2/books | jq '.version // "v2"'
-```
+```{{exec}}
 
 The second request should consistently return v2 response structure.
 

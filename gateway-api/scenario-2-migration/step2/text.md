@@ -32,7 +32,7 @@ ports:
     exposedPort: 443
     nodePort: 30091       # HTTPS traffic tab port
 EOF
-```
+```{{exec}}
 
 ## Add the Traefik Helm repo and install
 
@@ -44,20 +44,20 @@ helm install traefik traefik/traefik \
   --namespace traefik \
   --create-namespace \
   -f /root/traefik-values.yaml
-```
+```{{exec}}
 
 ## Wait for Traefik to be ready
 
 ```
 kubectl rollout status deployment traefik -n traefik
-```
+```{{exec}}
 
 ## Confirm Traefik is listening
 
 ```
 kubectl get pods -n traefik
 kubectl get svc -n traefik
-```
+```{{exec}}
 
 The service should show NodePorts **30090** and **30091**.
 

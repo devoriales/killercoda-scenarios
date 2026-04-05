@@ -9,7 +9,7 @@ Now that Traefik is running with the Gateway API provider enabled, you need two 
 
 ```
 kubectl apply -f /root/manifests/03-gateway-api/gatewayclass.yaml
-```
+```{{exec}}
 
 The manifest:
 
@@ -20,13 +20,13 @@ metadata:
   name: traefik
 spec:
   controllerName: traefik.io/gateway-controller
-```
+```{{copy}}
 
 The `controllerName` must exactly match what Traefik watches for. Check the status:
 
 ```
 kubectl get gatewayclass traefik
-```
+```{{exec}}
 
 Look for `ACCEPTED: True` in the output. Traefik sets this once it recognises the class.
 
@@ -34,7 +34,7 @@ Look for `ACCEPTED: True` in the output. Traefik sets this once it recognises th
 
 ```
 kubectl apply -f /root/manifests/03-gateway-api/gateway-http.yaml
-```
+```{{exec}}
 
 The manifest:
 
@@ -53,7 +53,7 @@ spec:
     allowedRoutes:
       namespaces:
         from: Same
-```
+```{{copy}}
 
 > **Why port 8000?** Traefik's `web` entryPoint binds internally to port 8000 (as configured in the Helm values). The Gateway listener port must match the **internal** entryPoint port — not the NodePort or exposed port. Traefik maps `8000 → NodePort 30090` via the Service.
 
@@ -62,7 +62,7 @@ Check the Gateway status:
 ```
 kubectl get gateway -n bookstore
 kubectl describe gateway bookstore-gateway -n bookstore
-```
+```{{exec}}
 
 Look for the condition `Programmed: True` — this means Traefik has configured the listener.
 

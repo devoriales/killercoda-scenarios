@@ -8,20 +8,20 @@ First delete the legacy Ingress object from the bookstore namespace:
 
 ```
 kubectl delete ingress bookstore-ingress -n bookstore
-```
+```{{exec}}
 
 ## Uninstall ingress-nginx
 
 ```
 helm uninstall ingress-nginx -n ingress-nginx
 kubectl delete namespace ingress-nginx
-```
+```{{exec}}
 
 ## Verify ingress-nginx is gone
 
 ```
 kubectl get ns ingress-nginx
-```
+```{{exec}}
 
 Expected: `Error from server (NotFound)` — the namespace is deleted.
 
@@ -37,7 +37,7 @@ for endpoint in /health /api/v1/books /api/v2/books /admin; do
     https://bookstore.local:30091${endpoint})
   echo "$CODE  $endpoint"
 done
-```
+```{{exec}}
 
 All endpoints should return **200**.
 
@@ -62,6 +62,6 @@ kubectl delete gateway bookstore-gateway -n bookstore
 kubectl delete gatewayclass traefik
 helm uninstall traefik -n traefik
 kubectl delete namespace traefik bookstore
-```
+```{{exec}}
 
 Click **Check** to complete the scenario.

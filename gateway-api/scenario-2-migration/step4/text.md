@@ -45,14 +45,14 @@ spec:
 EOF
 
 kubectl apply -f /root/bookstore-http-route.yaml
-```
+```{{exec}}
 
 ## Verify the route status
 
 ```
 kubectl get httproute -n bookstore
 kubectl describe httproute bookstore-route -n bookstore
-```
+```{{exec}}
 
 Look for `ResolvedRefs: True` and `Accepted: True` in the conditions.
 
@@ -61,7 +61,7 @@ Look for `ResolvedRefs: True` and `Accepted: True` in the conditions.
 ```
 curl -s -H "Host: bookstore.local" http://localhost:30090/health
 curl -s -H "Host: bookstore.local" http://localhost:30090/api/v1/books
-```
+```{{exec}}
 
 Both ingress-nginx (port **30080**) and Traefik (port **30090**) are now routing to the same bookstore Service. You can compare them side by side.
 

@@ -6,7 +6,7 @@ With ingress-nginx running, you can now create an `Ingress` resource to expose t
 
 ```
 kubectl apply -f /root/manifests/02-ingress-nginx/bookstore-ingress.yaml
-```
+```{{exec}}
 
 This creates:
 
@@ -29,13 +29,13 @@ spec:
             name: bookstore
             port:
               number: 80
-```
+```{{copy}}
 
 ## Test the route
 
 ```
 curl -s -H "Host: bookstore.local" http://localhost:30080/health
-```
+```{{exec}}
 
 Expected:
 ```json
@@ -46,7 +46,7 @@ Try the books endpoint:
 
 ```
 curl -s -H "Host: bookstore.local" http://localhost:30080/api/v1/books
-```
+```{{exec}}
 
 ## What you're seeing — and its limitations
 
