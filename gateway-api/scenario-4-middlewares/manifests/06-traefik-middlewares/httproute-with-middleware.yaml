@@ -1,0 +1,44 @@
+# HTTPRoute with Traefik Middlewares attached via ExtensionRef (Gateway API extension point).
+# ExtensionRef points at vendor CRDs by group/kind/name — Traefik-specific, non-portable.
+# Prerequisites: rate-limit.yaml and security-headers.yaml must be applied first.
+# Apply: kubectl apply -f /root/manifests/06-traefik-middlewares/httproute-with-middleware.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: bookstore-with-middleware
+  namespace: bookstore
+spec:
+  parentRefs:
+  - name: bookstore-gateway
+    namespace: bookstore
+    sectionName: https
+  hostnames:
+  - bookstore.local
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /api
+    filters:
+    # ExtensionRef attaches a Traefik Middleware to this route rule.
+    # Multiple filters are applied in order — both active on every /api request.
+    - type: ExtensionRef
+      extensionRef:
+        group: traefik.io
+        kind: Middleware
+        name: rate-limit
+    - type: ExtensionRef
+      extensionRef:
+        group: traefik.io
+        kind: Middleware
+        name: security-headers
+    backendRefs:
+    - name: bookstore
+      port: 80
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: bookstore
+      port: 80

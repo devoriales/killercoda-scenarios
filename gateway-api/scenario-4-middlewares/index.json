@@ -1,0 +1,40 @@
+{
+  "title": "Gateway API Lab 4/4 — Traefik Middlewares via ExtensionRef",
+  "description": "Extend your HTTPRoute with vendor-specific functionality by attaching Traefik Middleware CRDs via the Gateway API ExtensionRef filter. Add rate limiting and security headers to protect the bookstore API. Traefik, Gateway, and a working HTTPRoute are pre-installed.",
+  "difficulty": "Intermediate",
+  "time": "20",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "background.sh"
+    },
+    "steps": [
+      {
+        "title": "Create Traefik Middleware CRDs",
+        "text": "step1/text.md",
+        "verify": "step1/verify.sh"
+      },
+      {
+        "title": "Attach middlewares to an HTTPRoute via ExtensionRef",
+        "text": "step2/text.md",
+        "verify": "step2/verify.sh"
+      },
+      {
+        "title": "Verify security headers and test rate limiting",
+        "text": "step3/text.md",
+        "verify": "step3/verify.sh"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    },
+    "assets": {
+      "host01": [
+        {"file": "manifests/**/*.*", "target": "/root/manifests"}
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node"
+  }
+}

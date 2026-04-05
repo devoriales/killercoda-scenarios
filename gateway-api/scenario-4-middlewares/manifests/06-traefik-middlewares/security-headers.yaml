@@ -1,0 +1,18 @@
+# Security Headers Middleware — injects protective HTTP response headers
+# X-Frame-Options:         Prevent clickjacking (blocks iframes)
+# X-Content-Type-Options:  Prevent MIME-type sniffing
+# Referrer-Policy:         Control referrer data in cross-origin requests
+# Content-Security-Policy: Restrict which resources can be loaded
+# Apply: kubectl apply -f /root/manifests/06-traefik-middlewares/security-headers.yaml
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: security-headers
+  namespace: bookstore
+spec:
+  headers:
+    customResponseHeaders:
+      X-Frame-Options: "DENY"
+      X-Content-Type-Options: "nosniff"
+      Referrer-Policy: "strict-origin-when-cross-origin"
+      Content-Security-Policy: "default-src 'self'"
