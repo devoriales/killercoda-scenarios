@@ -1,7 +1,7 @@
 # Gateway API Lab 3/3 — Advanced Routing and Cutover
 
 > This scenario is part of the **[Gateway API Learning Lab: From Zero to Hero](https://devoriales.com/quiz/20/gateway-api-learning-lab-from-zero-to-hero)** course on [devoriales.com](https://devoriales.com).
-> **Scenarios:** [1 — Baseline](https://killercoda.com/devoriales/scenario/gateway-api-lab-1-baseline) · [2 — Migration](https://killercoda.com/devoriales/scenario/gateway-api-lab-2-migration) · [3 — Advanced](#)
+> **Scenarios:** [1 — Baseline](https://killercoda.com/devoriales/course/gateway-api/scenario-1-baseline) · [2 — Migration](https://killercoda.com/devoriales/course/gateway-api/scenario-2-migration) · [3 — Advanced](https://killercoda.com/devoriales/course/gateway-api/scenario-3-advanced)· [4 — Middlewares](https://killercoda.com/devoriales/course/gateway-api/scenario-4-middlewares)
 
 In this final scenario you will use two advanced Gateway API features that would require controller-specific hacks with classic Ingress: **canary deployments** via traffic splitting and **header-based routing**. Then you'll complete the migration by decommissioning ingress-nginx entirely.
 

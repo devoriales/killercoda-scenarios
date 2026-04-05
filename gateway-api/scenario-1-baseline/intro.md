@@ -1,7 +1,7 @@
 # Gateway API Lab 1/3 — The Baseline: ingress-nginx
 
 > This scenario is part of the **[Gateway API Learning Lab: From Zero to Hero](https://devoriales.com/quiz/20/gateway-api-learning-lab-from-zero-to-hero)** course on [devoriales.com](https://devoriales.com).
-> **Scenarios:** [1 — Baseline](#) · [2 — Migration](https://killercoda.com/devoriales/scenario/gateway-api-lab-2-migration) · [3 — Advanced](https://killercoda.com/devoriales/scenario/gateway-api-lab-3-advanced)
+> **Scenarios:** [1 — Baseline](https://killercoda.com/devoriales/course/gateway-api/scenario-1-baseline) · [2 — Migration](https://killercoda.com/devoriales/course/gateway-api/scenario-2-migration) · [3 — Advanced](https://killercoda.com/devoriales/course/gateway-api/scenario-3-advanced)· [4 — Middlewares](https://killercoda.com/devoriales/course/gateway-api/scenario-4-middlewares)
 
 In this first scenario you will install **ingress-nginx** and expose a bookstore REST API using a classic `Ingress` resource. This is the *before* state — the baseline you'll migrate away from in scenarios 2 and 3.
 
