@@ -1,6 +1,6 @@
 {
   "title": "Kubernetes Gateway API — From Zero to Hero",
-  "description": "Hands-on labs for the Kubernetes Gateway API: baseline ingress with ingress-nginx, migration to HTTPRoute with Traefik v3 and TLS, and advanced traffic splitting with canary deployments. Part of the full course at https://devoriales.com/quiz/20/gateway-api-learning-lab-from-zero-to-hero",
+  "description": "Hands-on labs for the Kubernetes Gateway API. Part of the full course at https://devoriales.com/quiz/20/gateway-api-learning-lab-from-zero-to-hero",
   "items": [
     { "path": "gateway-api/scenario-1-baseline" },
     { "path": "gateway-api/scenario-2-migration" },
