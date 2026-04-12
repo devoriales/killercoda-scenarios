@@ -13,14 +13,14 @@ until kubectl get crd httproutes.gateway.networking.k8s.io &>/dev/null && \
   echo "Waiting for environment..."; sleep 5
 done
 echo "Ready!"
-```{{exec}}
+```{{copy}}
 
 ## Check what's running
 
 ```
 kubectl get httproute -n bookstore
 kubectl get pods -n bookstore
-```{{exec}}
+```{{copy}}
 
 You have `bookstore` (v1, 2 replicas) and `bookstore-v2` (1 replica) both running.
 
@@ -28,7 +28,7 @@ You have `bookstore` (v1, 2 replicas) and `bookstore-v2` (1 replica) both runnin
 
 ```
 kubectl apply -f /root/manifests/05-advanced/canary-route.yaml
-```{{exec}}
+```{{copy}}
 
 The key part of the manifest:
 
@@ -55,7 +55,7 @@ The background pre-installed a basic HTTPRoute (`bookstore-route`) that sends al
 
 ```
 kubectl delete httproute bookstore-route -n bookstore 2>/dev/null || true
-```{{exec}}
+```{{copy}}
 
 ## Test the split
 
@@ -68,7 +68,7 @@ for i in $(seq 1 50); do
     --resolve bookstore.local:30091:127.0.0.1 \
     https://bookstore.local:30091/ | grep -o '"version":"[^"]*"'
 done | sort | uniq -c
-```{{exec}}
+```{{copy}}
 
 You should see roughly 45 hits on v1 and 5 on v2. Traefik uses probabilistic weighted routing — with only 20 requests there's a ~12% chance of seeing zero v2 hits, so 50 requests gives a reliable demonstration.
 

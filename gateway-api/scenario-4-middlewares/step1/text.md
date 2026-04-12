@@ -14,7 +14,7 @@ Apply from the manifest delivered to your VM:
 
 ```
 kubectl apply -f /root/manifests/06-traefik-middlewares/rate-limit.yaml
-```{{exec}}
+```{{copy}}
 
 Or apply inline:
 
@@ -31,7 +31,7 @@ spec:
     burst: 20
 EOF
 
-```{{exec}}
+```{{copy}}
 
 ## Create a Security Headers Middleware
 
@@ -46,7 +46,7 @@ This middleware injects HTTP response headers that protect against common web vu
 
 ```
 kubectl apply -f /root/manifests/06-traefik-middlewares/security-headers.yaml
-```{{exec}}
+```{{copy}}
 
 Or apply inline:
 
@@ -65,7 +65,7 @@ spec:
       Referrer-Policy: "strict-origin-when-cross-origin"
       Content-Security-Policy: "default-src 'self'"
 EOF
-```{{exec}}
+```{{copy}}
 
 ## Verify
 

@@ -6,7 +6,7 @@ With ingress-nginx running, you can now create an `Ingress` resource to expose t
 
 ```
 kubectl apply -f /root/manifests/02-ingress-nginx/bookstore-ingress.yaml
-```{{exec}}
+```{{copy}}
 
 This creates:
 
@@ -35,18 +35,18 @@ spec:
 
 ```
 curl -s -H "Host: bookstore.local" http://localhost:30080/health
-```{{exec}}
+```{{copy}}
 
 Expected:
 ```json
-{"status": "healthy", "service": "bookstore-api"}
+{"status":"healthy","version":"v1"}
 ```
 
 Try the books endpoint:
 
 ```
 curl -s -H "Host: bookstore.local" http://localhost:30080/api/v1/books
-```{{exec}}
+```{{copy}}
 
 ## What you're seeing — and its limitations
 

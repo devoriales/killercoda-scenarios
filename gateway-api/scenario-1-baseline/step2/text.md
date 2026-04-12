@@ -7,7 +7,7 @@ Before migrating to the Gateway API, you'll install **ingress-nginx** — the co
 ```
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
-```{{exec}}
+```{{copy}}
 
 ## Install the controller
 
@@ -20,7 +20,7 @@ helm install ingress-nginx ingress-nginx/ingress-nginx \
   --set controller.service.type=NodePort \
   --set controller.service.nodePorts.http=30080 \
   --set controller.service.nodePorts.https=30443
-```{{exec}}
+```{{copy}}
 
 This maps:
 - Port **30080** → ingress-nginx HTTP
@@ -30,13 +30,13 @@ This maps:
 
 ```
 kubectl rollout status deployment ingress-nginx-controller -n ingress-nginx
-```{{exec}}
+```{{copy}}
 
 ## Confirm the IngressClass exists
 
 ```
 kubectl get ingressclass
-```{{exec}}
+```{{copy}}
 
 You should see `nginx` listed. This is the class name your Ingress resources will reference.
 

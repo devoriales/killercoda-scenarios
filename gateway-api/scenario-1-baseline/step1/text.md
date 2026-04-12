@@ -6,7 +6,7 @@ The Kubernetes cluster is up and the bookstore API is already deployed. Before i
 
 ```
 kubectl get nodes
-```{{exec}}
+```{{copy}}
 
 You should see a single node in `Ready` state.
 
@@ -14,7 +14,7 @@ You should see a single node in `Ready` state.
 
 ```
 kubectl get all -n bookstore
-```{{exec}}
+```{{copy}}
 
 You'll see:
 - **Deployment** `bookstore` (v1) — 2 replicas
@@ -29,18 +29,18 @@ The app is running but not yet exposed outside the cluster. Port-forward the Ser
 kubectl port-forward -n bookstore svc/bookstore 8000:80 &
 sleep 1
 curl -s http://localhost:8000/health
-```{{exec}}
+```{{copy}}
 
 Expected output:
 ```json
-{"status": "healthy", "service": "bookstore-api"}
+{"status":"healthy","version":"v1"}
 ```
 
 ## Explore the API
 
 ```bash
 curl -s http://localhost:8000/api/v1/books
-```{{exec}}
+```{{copy}}
 
 You'll get a JSON list of books. This is what you'll route externally via ingress-nginx and later via the Gateway API.
 

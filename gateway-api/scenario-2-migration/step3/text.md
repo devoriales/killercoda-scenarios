@@ -9,7 +9,7 @@ Now that Traefik is running with the Gateway API provider enabled, you need two 
 
 ```
 kubectl apply -f /root/manifests/03-gateway-api/gatewayclass.yaml
-```{{exec}}
+```{{copy}}
 
 The manifest:
 
@@ -26,7 +26,7 @@ The `controllerName` must exactly match what Traefik watches for. Check the stat
 
 ```
 kubectl get gatewayclass traefik
-```{{exec}}
+```{{copy}}
 
 Look for `ACCEPTED: True` in the output. Traefik sets this once it recognises the class.
 
@@ -34,7 +34,7 @@ Look for `ACCEPTED: True` in the output. Traefik sets this once it recognises th
 
 ```
 kubectl apply -f /root/manifests/03-gateway-api/gateway-http.yaml
-```{{exec}}
+```{{copy}}
 
 The manifest:
 
@@ -62,7 +62,7 @@ Check the Gateway status:
 ```
 kubectl get gateway -n bookstore
 kubectl describe gateway bookstore-gateway -n bookstore
-```{{exec}}
+```{{copy}}
 
 Look for the condition `Programmed: True` — this means Traefik has configured the listener.
 
