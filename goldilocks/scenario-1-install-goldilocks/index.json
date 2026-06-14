@@ -1,0 +1,35 @@
+{
+  "title": "Goldilocks Lab 1/3 — Install Goldilocks and VPA",
+  "description": "Install the Vertical Pod Autoscaler and Goldilocks on a live Kubernetes cluster. By the end you'll have a running Goldilocks controller and dashboard ready to generate resource recommendations.",
+  "difficulty": "Beginner",
+  "time": "15",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "background.sh"
+    },
+    "steps": [
+      {
+        "title": "Install the Vertical Pod Autoscaler",
+        "text": "step1/text.md",
+        "verify": "step1/verify.sh"
+      },
+      {
+        "title": "Install Goldilocks",
+        "text": "step2/text.md",
+        "verify": "step2/verify.sh"
+      },
+      {
+        "title": "Verify the installation",
+        "text": "step3/text.md",
+        "verify": "step3/verify.sh"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node"
+  }
+}

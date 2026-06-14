@@ -1,0 +1,4 @@
+.playwright-mcp/
+excalidraw.log
+*.log
+.DS_Store

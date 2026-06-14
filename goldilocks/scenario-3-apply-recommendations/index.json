@@ -1,0 +1,35 @@
+{
+  "title": "Goldilocks Lab 3/3 — Apply Recommendations",
+  "description": "Take Goldilocks recommendations and apply them to real deployments. Patch the frontend to Guaranteed QoS and the api to Burstable QoS, then verify the rollout and QoS class of each pod.",
+  "difficulty": "Beginner",
+  "time": "15",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "background.sh"
+    },
+    "steps": [
+      {
+        "title": "Read recommendations and choose a strategy",
+        "text": "step1/text.md",
+        "verify": "step1/verify.sh"
+      },
+      {
+        "title": "Apply Guaranteed QoS to the frontend",
+        "text": "step2/text.md",
+        "verify": "step2/verify.sh"
+      },
+      {
+        "title": "Apply Burstable QoS to the api",
+        "text": "step3/text.md",
+        "verify": "step3/verify.sh"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node"
+  }
+}

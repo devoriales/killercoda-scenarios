@@ -1,5 +1,6 @@
 {
   "items": [
-    { "path": "gateway-api" }
+    { "path": "gateway-api" },
+    { "path": "goldilocks" }
   ]
 }
