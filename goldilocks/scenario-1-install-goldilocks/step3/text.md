@@ -7,32 +7,33 @@ Run each verification command and compare to the expected output.
 **VPA pods:**
 ```
 kubectl get pods -n vpa
-```
+``` {{copy}}
 Expected: three pods (recommender, updater, admission-controller) all `1/1 Running`.
 
 **Goldilocks pods:**
 ```
 kubectl get pods -n goldilocks
+``` {{copy}}
 ```
 Expected: two pods (controller and dashboard) both `1/1 Running`.
 
 **Goldilocks dashboard service:**
 ```
 kubectl get svc -n goldilocks
-```
+``` {{copy}}
 Expected: `goldilocks-dashboard` service with type `ClusterIP` on port `80`.
 
 **Confirm image registry:**
 ```
 kubectl get pods -n goldilocks \
   -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.containers[0].image}{"\n"}{end}'
-```
+``` {{copy}}
 Both lines should start with `us-docker.pkg.dev/fairwinds-ops/oss/goldilocks`.
 
 **Helm releases:**
 ```
 helm list -A
-```
+``` {{copy}}
 You should see `vpa` (namespace: vpa) and `goldilocks` (namespace: goldilocks), both with STATUS `deployed`.
 
 ## Preview the dashboard (optional)
@@ -42,4 +43,4 @@ You can preview the dashboard, but there are no labeled namespaces yet — it wi
 ```
 kubectl -n goldilocks port-forward svc/goldilocks-dashboard 8080:80 &
 curl -sL http://localhost:8080/namespaces | grep -o "namespaceList.*" | head -1
-```
+``` {{copy}}

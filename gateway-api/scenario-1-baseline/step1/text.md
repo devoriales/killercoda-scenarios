@@ -29,7 +29,7 @@ The app is running but not yet exposed outside the cluster. Port-forward the Ser
 kubectl port-forward -n bookstore svc/bookstore 8000:80 &
 sleep 1
 curl -s http://localhost:8000/health
-```{{copy}}
+```{{exec}}
 
 Expected output:
 ```json

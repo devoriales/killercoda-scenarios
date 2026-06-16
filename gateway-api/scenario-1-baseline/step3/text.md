@@ -29,7 +29,10 @@ spec:
             name: bookstore
             port:
               number: 80
-```{{copy}}
+```
+Key points:
+- `ingressClassName: nginx` ensures this Ingress is picked up by ingress-nginx
+- The rule matches requests with `Host: bookstore.local` and routes them to the `bookstore` Service on port 80
 
 ## Test the route
 

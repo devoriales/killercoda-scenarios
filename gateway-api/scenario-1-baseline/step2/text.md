@@ -33,6 +33,7 @@ kubectl rollout status deployment ingress-nginx-controller -n ingress-nginx
 ```{{copy}}
 
 ## Confirm the IngressClass exists
+In order for Ingress resources to be picked up by the controller, an `IngressClass` must exist with a `controller` value of `k8s.io/ingress-nginx`. Check it was created:
 
 ```
 kubectl get ingressclass

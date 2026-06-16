@@ -20,7 +20,7 @@ vpa:
 metrics-server:
   enabled: false
 EOF
-```
+``` {{copy}}
 
 The `vpa.enabled: false` and `metrics-server.enabled: false` flags prevent Goldilocks from installing its own bundled copies — we already have those.
 
@@ -33,7 +33,7 @@ helm install goldilocks fairwinds-stable/goldilocks \
   -f /root/goldilocks-values.yaml \
   --wait \
   --timeout 180s
-```
+``` {{copy}}
 
 ## What gets installed
 
