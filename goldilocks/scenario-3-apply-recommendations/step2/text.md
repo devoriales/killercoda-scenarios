@@ -7,7 +7,7 @@ The frontend (nginx) is over-provisioned. VPA recommends `~15m CPU / ~100Mi memo
 ```
 kubectl get pod -n metrics-app -l app=frontend \
   -o jsonpath='{.items[0].status.qosClass}'
-```
+```{{copy}}
 
 Output: `Guaranteed` — but with wrong values (`500m / 512Mi`).
 
@@ -20,27 +20,27 @@ kubectl patch deployment frontend -n metrics-app --type='json' -p='[
   {"op":"replace","path":"/spec/template/spec/containers/0/resources/limits/cpu","value":"15m"},
   {"op":"replace","path":"/spec/template/spec/containers/0/resources/limits/memory","value":"100Mi"}
 ]'
-```
+```{{copy}}
 
 ## Wait for the rollout
 
 ```
 kubectl rollout status deployment/frontend -n metrics-app --timeout=90s
-```
+```{{copy}}
 
 ## Verify the new QoS class and resources
 
 ```
 kubectl get pod -n metrics-app -l app=frontend \
   -o jsonpath='{.items[0].status.qosClass}'
-```
+```{{copy}}
 
 Expected: `Guaranteed` ✅
 
 ```
 kubectl get pod -n metrics-app -l app=frontend \
   -o jsonpath='{.items[0].spec.containers[0].resources}'
-```
+```{{copy}}
 
 Expected: `{"limits":{"cpu":"15m","memory":"100Mi"},"requests":{"cpu":"15m","memory":"100Mi"}}`
 

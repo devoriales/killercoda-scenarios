@@ -18,20 +18,20 @@ kubectl patch deployment api -n metrics-app --type='json' -p='[
   {"op":"replace","path":"/spec/template/spec/containers/0/resources/limits/cpu","value":"250m"},
   {"op":"replace","path":"/spec/template/spec/containers/0/resources/limits/memory","value":"200Mi"}
 ]'
-```
+```{{copy}}
 
 ## Wait for the rollout
 
 ```
 kubectl rollout status deployment/api -n metrics-app --timeout=90s
-```
+```{{copy}}
 
 ## Verify QoS is Burstable
 
 ```
 kubectl get pod -n metrics-app -l app=api \
   -o jsonpath='{.items[0].status.qosClass}'
-```
+```{{copy}}
 
 Expected: `Burstable` ✅ (because `requests < limits`)
 
@@ -40,7 +40,7 @@ Expected: `Burstable` ✅ (because `requests < limits`)
 ```
 kubectl get pods -n metrics-app \
   -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.qosClass}{"\n"}{end}'
-```
+```{{copy}}
 
 Expected:
 - `api-*` pods → `Burstable`

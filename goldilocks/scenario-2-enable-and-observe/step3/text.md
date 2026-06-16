@@ -6,7 +6,7 @@ After ~60 seconds, the VPA recommender has enough data to produce recommendation
 
 ```
 kubectl get vpa -n metrics-app
-```
+```{{copy}}
 
 Wait until the `PROVIDED` column shows `True` for at least one VPA before continuing.
 
@@ -14,7 +14,7 @@ Wait until the `PROVIDED` column shows `True` for at least one VPA before contin
 
 ```
 kubectl describe vpa goldilocks-frontend -n metrics-app
-```
+```{{copy}}
 
 Look for the `Recommendation` section. The frontend runs nginx with very low CPU usage. You should see something like:
 
@@ -37,7 +37,7 @@ Compare this to the current setting (`500m CPU / 512Mi memory`). The **target** 
 
 ```
 kubectl describe vpa goldilocks-api -n metrics-app
-```
+```{{copy}}
 
 The api runs httpbin. The target CPU will be higher than the current request of `10m` — this deployment is **under-provisioned** and being throttled.
 
@@ -54,6 +54,6 @@ for vpa in vpas['items']:
     for r in recs:
         print(f'{name}/{r[\"containerName\"]}: target={r[\"target\"]}')
 "
-```
+```{{copy}}
 
 > **Note on upper bounds:** The `upperBound` values may be unrealistically large (e.g., thousands of millicores). VPA needs approximately 8 days of data to converge on accurate upper bounds. The `target` and `lowerBound` are much more reliable after just 1-2 hours.

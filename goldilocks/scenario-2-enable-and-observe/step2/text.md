@@ -6,13 +6,13 @@ Goldilocks is opt-in per namespace. A single label is all it takes.
 
 ```
 kubectl label namespace metrics-app goldilocks.fairwinds.com/enabled=true
-```
+```{{copy}}
 
 ## Confirm the label was applied
 
 ```
 kubectl get namespace metrics-app --show-labels
-```
+```{{copy}}
 
 Look for `goldilocks.fairwinds.com/enabled=true` in the output.
 
@@ -22,7 +22,7 @@ Within 5-10 seconds, the Goldilocks controller will detect the label and create 
 
 ```
 kubectl get vpa -n metrics-app --watch
-```
+```{{copy}}
 
 You should see entries appear for `goldilocks-api`, `goldilocks-frontend`, and `goldilocks-load-generator`. Press **Ctrl+C** once they appear.
 
@@ -34,6 +34,6 @@ Notice:
 
 ```
 kubectl get vpa goldilocks-api -n metrics-app -o yaml | head -30
-```
+```{{copy}}
 
 Note the labels `creator: Fairwinds` and `source: goldilocks` — these identify VPAs managed by Goldilocks vs ones you create manually.

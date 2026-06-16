@@ -4,7 +4,7 @@
 
 ```
 kubectl get vpa -n metrics-app
-```
+```{{copy}}
 
 Confirm `PROVIDED=True` for at least the `goldilocks-frontend` and `goldilocks-api` VPAs before continuing.
 
@@ -13,7 +13,7 @@ Confirm `PROVIDED=True` for at least the `goldilocks-frontend` and `goldilocks-a
 ```
 kubectl get vpa goldilocks-frontend -n metrics-app \
   -o jsonpath='{.status.recommendation.containerRecommendations[0].target}'
-```
+```{{copy}}
 
 The target CPU will be around `15m` — far below the current `500m`. This is over-provisioning.
 
@@ -22,7 +22,7 @@ The target CPU will be around `15m` — far below the current `500m`. This is ov
 ```
 kubectl get vpa goldilocks-api -n metrics-app \
   -o jsonpath='{.status.recommendation.containerRecommendations[0].target}'
-```
+```{{copy}}
 
 The target CPU will be significantly above the current `10m` request. This is under-provisioning.
 
@@ -41,4 +41,4 @@ For **Burstable**: set `requests = lowerBound`, `limits = 2-3× target` (don't u
 ```
 kubectl get vpa goldilocks-api -n metrics-app \
   -o jsonpath='{.status.recommendation.containerRecommendations[0].lowerBound}'
-```
+```{{copy}}

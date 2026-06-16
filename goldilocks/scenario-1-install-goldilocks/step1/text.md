@@ -6,7 +6,7 @@ Goldilocks does not generate recommendations itself — it reads them from VPA. 
 
 ```
 kubectl create namespace vpa
-``` {{copy}}
+```{{copy}}
 
 ## Install VPA via Helm
 
@@ -16,7 +16,7 @@ helm install vpa fairwinds-stable/vpa \
   --version 4.12.0 \
   --wait \
   --timeout 180s
-``` {{copy}}
+```{{copy}}
 
 This installs three components:
 - **vpa-recommender** — reads metrics, computes CPU/memory recommendations
@@ -27,7 +27,7 @@ This installs three components:
 
 ```
 kubectl get pods -n vpa
-``` {{copy}}
+```{{copy}}
 
 All three pods should show `1/1 Running`. This may take up to 60 seconds.
 
@@ -35,6 +35,6 @@ Also verify the VPA Custom Resource Definitions exist:
 
 ```
 kubectl get crd | grep autoscaling.k8s.io
-``` {{copy}}
+```{{copy}}
 
 You should see `verticalpodautoscalers.autoscaling.k8s.io` and `verticalpodautoscalercheckpoints.autoscaling.k8s.io`.
