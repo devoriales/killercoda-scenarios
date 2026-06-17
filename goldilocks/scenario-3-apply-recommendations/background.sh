@@ -10,18 +10,22 @@ helm repo add fairwinds-stable https://charts.fairwinds.com/stable 2>/dev/null |
 helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/ 2>/dev/null || true
 helm repo update 2>/dev/null
 
-helm install metrics-server metrics-server/metrics-server \
-  --namespace kube-system \
-  --set 'args[0]=--kubelet-insecure-tls' \
-  --wait --timeout 120s 2>/dev/null || true
+# Install metrics-server, VPA, and Goldilocks concurrently. They are independent at
+# install time (Goldilocks is configured with vpa.enabled=false and
+# metrics-server.enabled=false), so running them in parallel cuts setup wall-clock
+# from the sum of their --wait timeouts to roughly the longest single one.
+( helm install metrics-server metrics-server/metrics-server \
+    --namespace kube-system \
+    --set 'args[0]=--kubelet-insecure-tls' \
+    --wait --timeout 120s 2>/dev/null || true ) &
 
-kubectl create namespace vpa 2>/dev/null || true
-helm install vpa fairwinds-stable/vpa \
-  --namespace vpa --version 4.12.0 \
-  --wait --timeout 180s 2>/dev/null || true
+( kubectl create namespace vpa 2>/dev/null || true
+  helm install vpa fairwinds-stable/vpa \
+    --namespace vpa --version 4.12.0 \
+    --wait --timeout 180s 2>/dev/null || true ) &
 
-kubectl create namespace goldilocks 2>/dev/null || true
-cat > /tmp/goldilocks-values.yaml <<'EOF'
+( kubectl create namespace goldilocks 2>/dev/null || true
+  cat > /tmp/goldilocks-values.yaml <<'EOF'
 image:
   repository: us-docker.pkg.dev/fairwinds-ops/oss/goldilocks
   tag: v4.15.1
@@ -30,11 +34,13 @@ vpa:
 metrics-server:
   enabled: false
 EOF
+  helm install goldilocks fairwinds-stable/goldilocks \
+    --namespace goldilocks --version 10.4.0 \
+    -f /tmp/goldilocks-values.yaml \
+    --wait --timeout 180s 2>/dev/null || true ) &
 
-helm install goldilocks fairwinds-stable/goldilocks \
-  --namespace goldilocks --version 10.4.0 \
-  -f /tmp/goldilocks-values.yaml \
-  --wait --timeout 180s 2>/dev/null || true
+# Barrier: wait for all three installs before deploying the sample app.
+wait
 
 # Deploy sample app
 kubectl create namespace metrics-app 2>/dev/null || true

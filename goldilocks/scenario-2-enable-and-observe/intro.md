@@ -12,4 +12,7 @@ In this lab you will:
 2. Label the `metrics-app` namespace to activate Goldilocks
 3. Read the first VPA recommendations from the CLI
 
-When you see the `$` prompt, the environment is ready.
+The full stack (metrics-server, VPA, Goldilocks, and the sample app) installs in the
+background and takes **~3-5 minutes**. The `$` prompt appears before that finishes, so
+Step 1 starts with a readiness check that blocks until everything is up — wait for it
+to print `Ready!` before running the rest of the commands.
