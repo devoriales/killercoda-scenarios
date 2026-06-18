@@ -11,6 +11,39 @@
 # every run, so a half-built /root/acme always self-heals.
 set -uo pipefail
 
+# Write the tiny readiness waiter FIRST. foreground.sh just clears the screen and runs this
+# file, so the student never sees the script source or a wait loop being typed into their
+# terminal — only its short progress output.
+cat > /root/wait-ready.sh <<'WAIT'
+#!/bin/bash
+set -uo pipefail
+encrypted() { head -n1 "$1" 2>/dev/null | grep -q '^\$ANSIBLE_VAULT'; }
+ready() {
+  command -v ansible       >/dev/null 2>&1 || return 1
+  command -v ansible-vault >/dev/null 2>&1 || return 1
+  [ -f /root/acme/playbooks/site.yml ] || return 1
+  [ -d /root/acme/.git ] || return 1
+  encrypted /root/acme/inventories/dev/group_vars/all/vault.yml  || return 1
+  encrypted /root/acme/inventories/prod/group_vars/all/vault.yml || return 1
+}
+echo "Preparing the lab environment (installing Ansible, building the node image)..."
+echo "This takes ~2-3 minutes — please wait."
+ELAPSED=0; TIMEOUT=480; GRACE=90
+while ! ready; do
+  if [ "$ELAPSED" -ge "$TIMEOUT" ]; then
+    echo; echo "Still finishing up. If Step 1 looks empty, run:  bash /root/setup.sh"
+    exit 0
+  fi
+  # Self-heal: re-run the idempotent installer every ~30s past the grace period.
+  if [ "$ELAPSED" -ge "$GRACE" ] && [ $((ELAPSED % 30)) -eq 0 ] && [ -f /root/setup.sh ]; then
+    bash /root/setup.sh >/dev/null 2>&1
+  fi
+  printf '.'; sleep 5; ELAPSED=$((ELAPSED + 5))
+done
+echo; echo "Ready! The Acme Ansible repo is at /root/acme — start Step 1."
+WAIT
+chmod +x /root/wait-ready.sh
+
 # Outer heredoc is quoted ('SETUP') so nothing expands here. Every file written inside also
 # uses a quoted delimiter so contents (Jinja {{ }}, $ANSIBLE_VAULT, $vars) stay verbatim.
 cat > /root/setup.sh <<'SETUP'
