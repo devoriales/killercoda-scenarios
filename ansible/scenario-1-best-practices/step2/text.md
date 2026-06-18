@@ -25,17 +25,18 @@ cp .ssh/lab_dev_ed25519.pub .ssh/$(whoami).pub
 
 ## 3. Boot the three nodes
 
-The container entrypoint installs every `.ssh/*.pub` into the `ansible` user's
-`authorized_keys` at start-up.
+`docker/up.sh` builds the node image and starts `web1`, `web2`, `db1`. The container
+entrypoint installs every `.ssh/*.pub` into the `ansible` user's `authorized_keys` at
+start-up. (The lab uses plain `docker` — the `ubuntu` sandbox has no compose plugin.)
 
 ```
-docker compose -f docker/docker-compose.yml up -d --build
+bash docker/up.sh
 ```{{copy}}
 
 Give them a few seconds to start their SSH daemons:
 
 ```
-sleep 5 && docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+sleep 5 && docker ps --filter name=lab_ --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
 ```{{exec}}
 
 ## 4. Talk to them

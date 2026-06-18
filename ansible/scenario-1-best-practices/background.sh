@@ -23,7 +23,8 @@ export DEBIAN_FRONTEND=noninteractive
 command -v ansible >/dev/null 2>&1 || { apt-get update -y >/dev/null 2>&1; apt-get install -y --no-install-recommends ansible >/dev/null 2>&1; }
 command -v git     >/dev/null 2>&1 || apt-get install -y --no-install-recommends git >/dev/null 2>&1
 command -v pip3    >/dev/null 2>&1 || apt-get install -y --no-install-recommends python3-pip >/dev/null 2>&1
-docker compose version >/dev/null 2>&1 || apt-get install -y --no-install-recommends docker-compose-plugin >/dev/null 2>&1 || true
+# NOTE: the ubuntu backend has the docker engine but NOT the compose v2 plugin, so the lab
+# uses plain `docker build` / `docker run` (docker/up.sh) — no docker-compose dependency.
 # pre-commit + detect-secrets + ansible-lint: pip first, apt fallback for pre-commit.
 pip3 install --break-system-packages -q pre-commit detect-secrets ansible-lint >/dev/null 2>&1 \
   || apt-get install -y --no-install-recommends pre-commit >/dev/null 2>&1 || true
@@ -434,41 +435,31 @@ exec /usr/sbin/sshd -D -e
 EOF
 chmod +x docker/entrypoint.sh
 
-cat > docker/docker-compose.yml <<'EOF'
-# Three fake servers: web1, web2 (group webservers) and db1 (group dbservers).
-# Each publishes SSH on a distinct localhost port matching ansible_port in the inventory.
-services:
-  web1:
-    build:
-      context: .
-      dockerfile: node.dockerfile
-    container_name: lab_web1
-    hostname: web1
-    ports:
-      - "2201:22"
-    volumes:
-      - ../.ssh:/keys:ro
-  web2:
-    build:
-      context: .
-      dockerfile: node.dockerfile
-    container_name: lab_web2
-    hostname: web2
-    ports:
-      - "2202:22"
-    volumes:
-      - ../.ssh:/keys:ro
-  db1:
-    build:
-      context: .
-      dockerfile: node.dockerfile
-    container_name: lab_db1
-    hostname: db1
-    ports:
-      - "2203:22"
-    volumes:
-      - ../.ssh:/keys:ro
+cat > docker/up.sh <<'EOF'
+#!/bin/bash
+# Build the node image once and start the three fake servers: web1, web2 (group
+# webservers) and db1 (group dbservers). Each publishes SSH on a distinct localhost port
+# matching ansible_port in the inventory. Uses plain docker (no compose plugin needed).
+set -e
+cd "$(dirname "$0")"                       # the docker/ directory
+docker build -t acme-node -f node.dockerfile .
+for spec in web1:2201 web2:2202 db1:2203; do
+  name="${spec%%:*}"; port="${spec##*:}"
+  docker rm -f "lab_${name}" >/dev/null 2>&1 || true
+  docker run -d --name "lab_${name}" --hostname "${name}" \
+    -p "${port}:22" -v "$(pwd)/../.ssh:/keys:ro" acme-node >/dev/null
+done
+docker ps --filter name=lab_ --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
 EOF
+chmod +x docker/up.sh
+
+cat > docker/down.sh <<'EOF'
+#!/bin/bash
+# Stop and remove the three lab nodes.
+docker rm -f lab_web1 lab_web2 lab_db1 >/dev/null 2>&1 || true
+echo "lab nodes removed."
+EOF
+chmod +x docker/down.sh
 
 cat > .ansible-lint <<'EOF'
 ---
@@ -495,7 +486,7 @@ rm -f /tmp/vault_dev.yml /tmp/vault_prod.yml
 
 # --- 5. Collections (best-effort) + warm the managed-node image -----------------------
 ansible-galaxy collection install -r requirements.yml >/dev/null 2>&1 || true
-docker compose -f docker/docker-compose.yml build >/dev/null 2>&1 || true
+docker build -t acme-node -f docker/node.dockerfile docker/ >/dev/null 2>&1 || true
 
 # --- 6. Git repo + pre-commit safety nets (clean baseline) ----------------------------
 if [ ! -d .git ]; then

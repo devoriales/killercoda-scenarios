@@ -7,14 +7,14 @@ cd /root/acme 2>/dev/null || { echo "Repo not found at /root/acme."; exit 1; }
 RUNNING=$(docker ps --format '{{.Names}}' 2>/dev/null | grep -cE '^lab_(web1|web2|db1)$' || true)
 if [ "$RUNNING" -lt 3 ]; then
   echo "Expected 3 node containers running, found $RUNNING."
-  echo "Run: docker compose -f docker/docker-compose.yml up -d --build"
+  echo "Run: bash docker/up.sh"
   exit 1
 fi
 
 if ! ansible all -m ping >/tmp/ansible_ping.out 2>&1; then
   echo "ansible could not reach all nodes:"
   cat /tmp/ansible_ping.out
-  echo "Did you generate .ssh/lab_dev_ed25519 BEFORE running 'docker compose up'?"
+  echo "Did you generate .ssh/lab_dev_ed25519 BEFORE running 'bash docker/up.sh'?"
   exit 1
 fi
 
