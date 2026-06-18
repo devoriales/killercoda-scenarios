@@ -16,9 +16,9 @@ encrypted() {
 }
 
 ready() {
-  command -v ansible    >/dev/null 2>&1 || return 1
+  command -v ansible       >/dev/null 2>&1 || return 1
   command -v ansible-vault >/dev/null 2>&1 || return 1
-  command -v pre-commit >/dev/null 2>&1 || return 1
+  [ -f /root/acme/playbooks/site.yml ] || return 1
   [ -d /root/acme/.git ] || return 1
   encrypted /root/acme/inventories/dev/group_vars/all/vault.yml  || return 1
   encrypted /root/acme/inventories/prod/group_vars/all/vault.yml || return 1
@@ -38,8 +38,9 @@ while ! ready; do
     echo "Inspect with: bash /root/setup.sh   (re-runs the idempotent installer)"
     break
   fi
-  # Self-heal: past the grace period and still not ready → re-run the idempotent installer.
-  if [ "$ELAPSED" -ge "$GRACE" ]; then
+  # Self-heal: past the grace period and still not ready → re-run the idempotent installer
+  # (every ~30s, not every loop, so we don't thrash apt/docker).
+  if [ "$ELAPSED" -ge "$GRACE" ] && [ $((ELAPSED % 30)) -eq 0 ]; then
     echo "Setup looks incomplete — reconciling..."
     [ -f /root/setup.sh ] && bash /root/setup.sh
   fi

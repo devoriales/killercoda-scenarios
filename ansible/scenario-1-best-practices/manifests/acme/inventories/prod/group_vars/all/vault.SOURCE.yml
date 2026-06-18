@@ -1,5 +1,0 @@
----
-# PLAINTEXT SECRET SOURCE — prod. background.sh encrypts this into vault.yml with the
-# `prod` vault-id and then deletes this file. Throwaway lab secrets.
-vault_db_password: prod-DB-pw-9z8y7x
-vault_api_token: prod-tok-zzz999

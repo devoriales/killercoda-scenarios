@@ -39,15 +39,17 @@ course** — its `backend.imageid` is **`ubuntu`** (Docker + Podman preinstalled
 `git` instead of `kubectl`.
 
 Key design points:
-- The complete reference repo (Acme's Ansible repo) is shipped under `manifests/acme/`
-  (dotfiles stored without the leading dot — `gitignore`, `pre-commit-config.yaml` — and
-  renamed by `background.sh`, because the asset glob `manifests/**/*.*` requires an
-  extension). `background.sh` assembles it at `/root/acme`.
+- **No `assets` / `manifests/` dir.** Killercoda's asset-copy did not deliver this deep
+  tree on the `ubuntu` backend, so `background.sh` is fully self-contained: it writes the
+  entire Acme reference repo to `/root/acme` **inline via heredocs** (the documented
+  fallback pattern). `background.sh` is the single source of truth — there is no separate
+  readable copy to keep in sync. `setup.sh` overwrites the repo files every run, so a
+  half-built `/root/acme` self-heals.
 - Managed nodes `web1`/`web2`/`db1` are Docker containers (built from
   `docker/node.dockerfile`, base `python:3.12-slim` + sshd) reached over real SSH on
   localhost ports **2201/2202/2203** (matching `ansible_port` in the inventory). The
   entrypoint installs every mounted `.ssh/*.pub` into the `ansible` user's
-  `authorized_keys`.
+  `authorized_keys`. The student generates the key and runs `docker compose up` in Step 2.
 - Vault `vault.yml` files are generated at runtime: plaintext `vault.SOURCE.yml` sources are
   encrypted by `background.sh` with `ansible-vault encrypt --encrypt-vault-id <env>`, then
   deleted. Throwaway vault passwords: `dev-lab-password`, `prod-lab-password`.

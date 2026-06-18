@@ -1,6 +1,0 @@
----
-# HIGH-precedence internals — do NOT override these from inventory. Internal-only vars get
-# a __ prefix so it is obvious they are constants the role owns.
-__webapp_owner: root
-__webapp_group: root
-__webapp_config_mode: "0640"

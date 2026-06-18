@@ -17,10 +17,10 @@ cd /root/acme
 | `ansible.cfg`, `requirements.*` | Decrypted secret output (`*.dec`, `.env`) |
 | `.gitignore`, pre-commit config | Anything under `.ssh/` |
 
-## The two safety nets are already installed
+## The two safety nets
 
-`background.sh` ran `git init`, established a `detect-secrets` baseline, and installed the
-pre-commit hooks. Confirm what is and isn't tracked:
+`background.sh` already ran `git init` and committed the encrypted repo. Confirm what is and
+isn't tracked:
 
 ```
 git status
@@ -28,6 +28,13 @@ git check-ignore .vault_pass.dev .ssh/lab_dev_ed25519
 ```{{copy}}
 
 The encrypted `vault.yml` is tracked; `.vault_pass.*` and `.ssh/` are ignored.
+
+Make sure the pre-commit hooks are installed (idempotent — safe to run again):
+
+```
+detect-secrets scan > .secrets.baseline
+pre-commit install
+```{{copy}}
 
 ## Drill: try to leak a secret and watch it get blocked
 
