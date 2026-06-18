@@ -517,11 +517,9 @@ for env in dev prod; do
 done
 rm -f /tmp/vault_dev.yml /tmp/vault_prod.yml
 
-# --- 5. Collections (best-effort) + warm the managed-node image -----------------------
-ansible-galaxy collection install -r requirements.yml >/dev/null 2>&1 || true
-docker build -t acme-node -f docker/node.dockerfile docker/ >/dev/null 2>&1 || true
-
-# --- 6. Git repo + pre-commit safety nets (clean baseline) ----------------------------
+# --- 5. Git repo + pre-commit safety nets (clean baseline) ----------------------------
+# Done BEFORE the slow image build so the readiness gate (which needs .git + encrypted
+# vaults) passes quickly and Step 1 opens while the image keeps building in the background.
 if [ ! -d .git ]; then
   git init -q
   git config user.email "dev@acme.test"
@@ -534,6 +532,12 @@ if [ ! -d .git ]; then
 fi
 
 echo "[setup] Ansible lab repo ready at /root/acme."
+
+# --- 6. Collections + warm the managed-node image (slowest; intentionally LAST) -------
+# The student also builds this in Step 2 via docker/up.sh, so this is only a warm-up and
+# must not gate readiness.
+ansible-galaxy collection install -r requirements.yml >/dev/null 2>&1 || true
+docker build -t acme-node -f docker/node.dockerfile docker/ >/dev/null 2>&1 || true
 SETUP
 
 chmod +x /root/setup.sh
