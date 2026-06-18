@@ -1,29 +1,44 @@
 #!/bin/bash
-# Scenario 2 background.sh — full stack: metrics-server + VPA + Goldilocks + sample app
-set -euo pipefail
+# Scenario 2 background.sh — full stack: metrics-server + VPA + Goldilocks + sample app.
+#
+# The install body is written to /root/setup.sh (single source of truth) and run from
+# there. foreground.sh re-runs /root/setup.sh if it detects an incomplete environment,
+# so a transient failure here is recoverable rather than fatal. We deliberately do NOT
+# use `set -e`: one failing command must never abort the rest of the setup.
+set -uo pipefail
+
+# Write the idempotent installer. The outer heredoc is quoted ('SETUP') so nothing
+# expands here — the inner heredocs are written verbatim and run when setup.sh executes.
+cat > /root/setup.sh <<'SETUP'
+#!/bin/bash
+# Idempotent installer for the Goldilocks lab. Safe to run multiple times.
+set -uo pipefail
 
 # Wait for cluster
 until kubectl get nodes 2>/dev/null | grep -q " Ready"; do sleep 3; done
 
-# Install Helm
-curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash -s -- --no-sudo 2>/dev/null
+# Install Helm (only if missing)
+if ! command -v helm >/dev/null 2>&1; then
+  curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash -s -- --no-sudo 2>/dev/null || true
+fi
 
 # Add repos
 helm repo add fairwinds-stable https://charts.fairwinds.com/stable 2>/dev/null || true
 helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/ 2>/dev/null || true
-helm repo update 2>/dev/null
+for i in 1 2 3; do helm repo update 2>/dev/null && break || sleep 5; done
 
 # Install metrics-server, VPA, and Goldilocks concurrently. They are independent at
 # install time (Goldilocks is configured with vpa.enabled=false and
 # metrics-server.enabled=false), so running them in parallel cuts setup wall-clock
 # from the sum of their --wait timeouts to roughly the longest single one.
-( helm install metrics-server metrics-server/metrics-server \
+# `helm upgrade --install` reconciles cleanly even after a partial prior run.
+( helm upgrade --install metrics-server metrics-server/metrics-server \
     --namespace kube-system \
     --set 'args[0]=--kubelet-insecure-tls' \
     --wait --timeout 120s 2>/dev/null || true ) &
 
 ( kubectl create namespace vpa 2>/dev/null || true
-  helm install vpa fairwinds-stable/vpa \
+  helm upgrade --install vpa fairwinds-stable/vpa \
     --namespace vpa --version 4.12.0 \
     --wait --timeout 180s 2>/dev/null || true ) &
 
@@ -37,7 +52,7 @@ vpa:
 metrics-server:
   enabled: false
 EOF
-  helm install goldilocks fairwinds-stable/goldilocks \
+  helm upgrade --install goldilocks fairwinds-stable/goldilocks \
     --namespace goldilocks --version 10.4.0 \
     -f /tmp/goldilocks-values.yaml \
     --wait --timeout 180s 2>/dev/null || true ) &
@@ -49,7 +64,7 @@ wait
 kubectl create namespace metrics-app 2>/dev/null || true
 
 # frontend: over-provisioned nginx
-kubectl apply -f - <<'EOF'
+kubectl apply -f - <<'EOF' || true
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -89,7 +104,7 @@ spec:
 EOF
 
 # api: under-provisioned httpbin
-kubectl apply -f - <<'EOF'
+kubectl apply -f - <<'EOF' || true
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -129,7 +144,7 @@ spec:
 EOF
 
 # load generator (generates traffic for VPA to observe)
-kubectl apply -f - <<'EOF'
+kubectl apply -f - <<'EOF' || true
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -165,4 +180,9 @@ EOF
 kubectl wait --for=condition=Ready pods -l app=frontend -n metrics-app --timeout=120s 2>/dev/null || true
 kubectl wait --for=condition=Ready pods -l app=api -n metrics-app --timeout=120s 2>/dev/null || true
 
+echo "[setup] Scenario 2 stack ready."
+SETUP
+
+chmod +x /root/setup.sh
+bash /root/setup.sh
 echo "[background] Scenario 2 ready."

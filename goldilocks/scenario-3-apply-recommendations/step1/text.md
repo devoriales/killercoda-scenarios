@@ -1,19 +1,7 @@
 # Step 1: Read Recommendations and Choose a Strategy
 
-## Wait for VPA recommendations to be ready
-
-The full stack installs in the background and recommendations take a few minutes to
-appear. Run this first and wait until it prints `Recommendations ready!`:
-
-```
-until [ -n "$(kubectl get vpa goldilocks-frontend -n metrics-app \
-    -o jsonpath='{.status.recommendation.containerRecommendations[0].target.cpu}' 2>/dev/null)" ] \
-  && [ -n "$(kubectl get vpa goldilocks-api -n metrics-app \
-    -o jsonpath='{.status.recommendation.containerRecommendations[0].target.cpu}' 2>/dev/null)" ]; do
-  echo "Waiting for VPA recommendations..."; sleep 5
-done
-echo "Recommendations ready!"
-```{{copy}}
+The full stack is prepared automatically and this step only opens once both VPAs report a
+recommendation — so the values below are ready to read as soon as you arrive.
 
 ## Get the current recommendations
 

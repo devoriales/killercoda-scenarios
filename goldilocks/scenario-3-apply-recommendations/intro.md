@@ -12,7 +12,7 @@ By the end of this lab you will have:
 - Patched `api` to **Burstable QoS** (increasing requests from 10m → 19m CPU with safe limits)
 - Confirmed the QoS class of each pod
 
-The full stack installs in the background and VPA recommendations need a few minutes of
-metrics to accumulate — budget **~3-5 minutes**. The `$` prompt appears before that
-finishes, so Step 1 starts with a readiness check that blocks until both VPAs report a
-recommendation — wait for it to print `Recommendations ready!` before continuing.
+The full stack installs automatically and VPA recommendations need a few minutes of
+metrics to accumulate — budget **~3-5 minutes**. You don't need to run anything to set it
+up — the terminal shows the setup progress and Step 1 only opens once both VPAs report a
+recommendation.

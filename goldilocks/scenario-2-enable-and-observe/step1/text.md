@@ -1,20 +1,7 @@
 # Step 1: Explore the Sample App
 
-## Wait for the environment to be ready
-
-The background setup (metrics-server, VPA, Goldilocks, sample app) takes a few minutes.
-Run this first and wait until it prints `Ready!`:
-
-```
-until kubectl get deploy frontend api -n metrics-app &>/dev/null \
-  && kubectl get pods -n metrics-app --field-selector=status.phase=Running \
-     --no-headers 2>/dev/null | grep -q . \
-  && kubectl get pods -n goldilocks --field-selector=status.phase=Running \
-     --no-headers 2>/dev/null | grep -q .; do
-  echo "Waiting for environment..."; sleep 5
-done
-echo "Ready!"
-```{{copy}}
+The lab environment (metrics-server, VPA, Goldilocks, sample app) is prepared
+automatically — this step only opens once everything is up, so you can start right away.
 
 Before enabling Goldilocks, inspect the existing deployments to understand what's misconfigured.
 

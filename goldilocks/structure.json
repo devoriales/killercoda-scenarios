@@ -1,4 +1,6 @@
 {
+  "title": "Right-Sizing Kubernetes Resources with Goldilocks",
+  "description": "Hands-on labs for Goldilocks, a Kubernetes controller that helps you find the right resource requests and limits for your workloads. Part of the full course at https://devoriales.com/quiz/21/right-sizing-kubernetes-resources-with-goldilocks",
   "items": [
     { "path": "scenario-1-install-goldilocks" },
     { "path": "scenario-2-enable-and-observe" },
