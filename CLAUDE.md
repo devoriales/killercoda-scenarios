@@ -29,6 +29,32 @@ Three scenarios forming a learning path:
 2. `gateway-api/scenario-2-migration` — Install Gateway API CRDs + Traefik v3, migrate to HTTPRoute, add TLS (intermediate, ~30 min)
 3. `gateway-api/scenario-3-advanced` — Canary traffic splitting, header-based routing, decommission ingress-nginx (intermediate, ~20 min)
 
+### Ansible Best-Practices course
+
+A single large scenario, `ansible/scenario-1-best-practices`, teaching team-grade Ansible
+hygiene: project structure, per-developer SSH-key access, Ansible Vault with per-environment
+vault-ids, the 5-developer workflow, and Git guards. **This is the only non-Kubernetes
+course** — its `backend.imageid` is **`ubuntu`** (Docker + Podman preinstalled), not
+`kubernetes-kubeadm-1node`. Verification uses `ansible`, `ansible-vault`, `docker`, and
+`git` instead of `kubectl`.
+
+Key design points:
+- The complete reference repo (Acme's Ansible repo) is shipped under `manifests/acme/`
+  (dotfiles stored without the leading dot — `gitignore`, `pre-commit-config.yaml` — and
+  renamed by `background.sh`, because the asset glob `manifests/**/*.*` requires an
+  extension). `background.sh` assembles it at `/root/acme`.
+- Managed nodes `web1`/`web2`/`db1` are Docker containers (built from
+  `docker/node.dockerfile`, base `python:3.12-slim` + sshd) reached over real SSH on
+  localhost ports **2201/2202/2203** (matching `ansible_port` in the inventory). The
+  entrypoint installs every mounted `.ssh/*.pub` into the `ansible` user's
+  `authorized_keys`.
+- Vault `vault.yml` files are generated at runtime: plaintext `vault.SOURCE.yml` sources are
+  encrypted by `background.sh` with `ansible-vault encrypt --encrypt-vault-id <env>`, then
+  deleted. Throwaway vault passwords: `dev-lab-password`, `prod-lab-password`.
+- `bootstrap.yml` uses only `ansible.builtin` modules (no external collection) so
+  `ansible-lint` resolves cleanly; the repo ships an `.ansible-lint` with
+  `profile: min` + `offline: true`.
+
 ## Scenario structure
 
 Each scenario directory follows the Killercoda format:

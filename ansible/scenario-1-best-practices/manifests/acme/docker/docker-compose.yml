@@ -1,0 +1,34 @@
+# Three fake servers: web1, web2 (group webservers) and db1 (group dbservers).
+# Each publishes SSH on a distinct localhost port matching ansible_port in the inventory.
+# The repo's .ssh directory is mounted read-only so the entrypoint can authorize keys.
+services:
+  web1:
+    build:
+      context: .
+      dockerfile: node.dockerfile
+    container_name: lab_web1
+    hostname: web1
+    ports:
+      - "2201:22"
+    volumes:
+      - ../.ssh:/keys:ro
+  web2:
+    build:
+      context: .
+      dockerfile: node.dockerfile
+    container_name: lab_web2
+    hostname: web2
+    ports:
+      - "2202:22"
+    volumes:
+      - ../.ssh:/keys:ro
+  db1:
+    build:
+      context: .
+      dockerfile: node.dockerfile
+    container_name: lab_db1
+    hostname: db1
+    ports:
+      - "2203:22"
+    volumes:
+      - ../.ssh:/keys:ro

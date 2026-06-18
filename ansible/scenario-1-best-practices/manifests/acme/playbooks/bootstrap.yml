@@ -1,0 +1,46 @@
+---
+# Authorize every developer's PUBLIC key (.ssh/*.pub) for the `ansible` user on all nodes.
+# Idempotent: re-running adds only new keys. Offboarding = delete a .pub and re-run.
+- name: Authorize all developer SSH public keys on all nodes
+  hosts: all
+  become: true
+  tasks:
+    - name: Find local public keys
+      ansible.builtin.find:
+        paths: "{{ playbook_dir }}/../.ssh"
+        patterns: "*.pub"
+      delegate_to: localhost
+      become: false
+      run_once: true
+      register: dev_pubkeys
+
+    - name: Ensure the ansible user's .ssh directory exists
+      ansible.builtin.file:
+        path: /home/ansible/.ssh
+        state: directory
+        owner: ansible
+        group: ansible
+        mode: "0700"
+
+    - name: Read each public key from the control node
+      ansible.builtin.slurp:
+        src: "{{ item.path }}"
+      delegate_to: localhost
+      become: false
+      run_once: true
+      loop: "{{ dev_pubkeys.files }}"
+      loop_control:
+        label: "{{ item.path | basename }}"
+      register: dev_pubkey_contents
+
+    - name: Authorize each developer key for the ansible user
+      ansible.builtin.lineinfile:
+        path: /home/ansible/.ssh/authorized_keys
+        line: "{{ item.content | b64decode | trim }}"
+        create: true
+        owner: ansible
+        group: ansible
+        mode: "0600"
+      loop: "{{ dev_pubkey_contents.results }}"
+      loop_control:
+        label: "{{ item.item.path | basename }}"

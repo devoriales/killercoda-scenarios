@@ -1,0 +1,71 @@
+{
+  "title": "Ansible Best-Practices Lab — Structure, SSH, Vault & Git Hygiene",
+  "description": "Build Acme's multi-environment Ansible project: per-developer SSH access to web/db nodes, vault-encrypted per-environment secrets, the 5-developer workflow, and Git guards that make leaking a secret hard to do by accident.",
+  "difficulty": "Intermediate",
+  "time": "45",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "background.sh",
+      "foreground": "foreground.sh"
+    },
+    "steps": [
+      {
+        "title": "Understand the project structure",
+        "text": "step1/text.md",
+        "verify": "step1/verify.sh"
+      },
+      {
+        "title": "Stand up the nodes & connect with an SSH key",
+        "text": "step2/text.md",
+        "verify": "step2/verify.sh"
+      },
+      {
+        "title": "Inventories, groups, and variables",
+        "text": "step3/text.md",
+        "verify": "step3/verify.sh"
+      },
+      {
+        "title": "Write a role the right way",
+        "text": "step4/text.md",
+        "verify": "step4/verify.sh"
+      },
+      {
+        "title": "Introduce Ansible Vault",
+        "text": "step5/text.md",
+        "verify": "step5/verify.sh"
+      },
+      {
+        "title": "Per-environment vault passwords (vault-ids)",
+        "text": "step6/text.md",
+        "verify": "step6/verify.sh"
+      },
+      {
+        "title": "The 5-developer workflow: keys & secrets",
+        "text": "step7/text.md",
+        "verify": "step7/verify.sh"
+      },
+      {
+        "title": "Git hygiene: what to commit, what never to",
+        "text": "step8/text.md",
+        "verify": "step8/verify.sh"
+      },
+      {
+        "title": "Verify: linting & dry runs",
+        "text": "step9/text.md",
+        "verify": "step9/verify.sh"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    },
+    "assets": {
+      "host01": [
+        { "file": "manifests/**/*.*", "target": "/root/manifests" }
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "ubuntu"
+  }
+}

@@ -1,0 +1,24 @@
+# Stored as dot.gitignore in the asset tree; background.sh renames it to .gitignore.
+# Net 1 of the Git safety nets: the dangerous things can't even be tracked.
+
+# Vault passwords — NEVER commit
+.vault_pass*
+
+# Private keys / certs
+*.key
+*.pem
+id_*
+*.ppk
+
+# SSH material — only *.pub is shareable, and we keep even that out of Git
+.ssh/
+
+# Decrypted secret output / local env
+*.dec
+secrets.yml
+.env
+
+# Python / tooling noise
+.venv/
+__pycache__/
+*.retry

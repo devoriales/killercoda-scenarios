@@ -1,0 +1,18 @@
+---
+# Deploy the web application config. The INDIRECTION at the role boundary lives here:
+# the environment's friendly db_password / api_token are mapped onto the role's
+# webapp_* interface, so the role never sees raw vault_* names.
+- name: Configure the Acme web application
+  hosts: webservers
+  become: true
+  roles:
+    - role: webapp
+      vars:
+        webapp_environment: "{{ environment_name }}"
+        webapp_db_host: "{{ db_host }}"
+        webapp_db_name: "{{ db_name }}"
+        webapp_db_password: "{{ db_password }}"
+        webapp_api_token: "{{ api_token }}"
+        # webapp_listen_port is intentionally NOT mapped here: the webservers group_var of
+        # the same name already overrides the role default (group_vars > role defaults),
+        # and re-mapping a variable onto itself would be a recursive-loop error.

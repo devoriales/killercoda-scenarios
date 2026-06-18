@@ -1,6 +1,7 @@
 {
   "items": [
     { "path": "gateway-api" },
-    { "path": "goldilocks" }
+    { "path": "goldilocks" },
+    { "path": "ansible" }
   ]
 }

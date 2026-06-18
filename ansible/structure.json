@@ -1,0 +1,7 @@
+{
+  "title": "Ansible Best-Practices Lab",
+  "description": "Work with Ansible the way a small team should: clean project structure, per-developer SSH-key access, disciplined secret management with Ansible Vault, and Git hygiene. Part of the courses at https://devoriales.com.",
+  "items": [
+    { "path": "scenario-1-best-practices" }
+  ]
+}

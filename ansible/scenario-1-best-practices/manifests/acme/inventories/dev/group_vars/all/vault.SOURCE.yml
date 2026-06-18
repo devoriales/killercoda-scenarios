@@ -1,0 +1,6 @@
+---
+# PLAINTEXT SECRET SOURCE — dev. background.sh encrypts this into vault.yml with the
+# `dev` vault-id and then deletes this file, so the student never sees a plaintext vault
+# committed to Git. These are throwaway lab secrets (they protect nothing real).
+vault_db_password: dev-Sup3rSecret-DB-pw
+vault_api_token: dev-tok-abc123xyz

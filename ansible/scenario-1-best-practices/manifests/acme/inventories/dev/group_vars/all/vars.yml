@@ -1,0 +1,10 @@
+---
+# Plain variables — committed readable. These map friendly names onto the vault_* values
+# defined (encrypted) in vault.yml. Roles and templates only ever reference these names,
+# never vault_db_password directly.
+environment_name: dev
+db_host: db1
+db_name: acme_app
+
+db_password: "{{ vault_db_password }}"
+api_token: "{{ vault_api_token }}"

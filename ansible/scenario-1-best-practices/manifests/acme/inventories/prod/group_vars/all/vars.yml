@@ -1,0 +1,9 @@
+---
+# Same shape as dev/group_vars/all/vars.yml, but resolves to the PROD environment and the
+# PROD vault values. Day-to-day dev work cannot touch these.
+environment_name: prod
+db_host: db1
+db_name: acme_app
+
+db_password: "{{ vault_db_password }}"
+api_token: "{{ vault_api_token }}"

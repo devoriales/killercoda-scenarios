@@ -1,0 +1,12 @@
+---
+# LOW-precedence defaults — meant to be overridden by inventory or the play.
+# Every variable is prefixed with the role name (webapp_) so the role can be reused
+# anywhere without variable collisions.
+webapp_environment: unknown
+webapp_listen_port: 8080
+webapp_config_dir: /etc/webapp
+webapp_config_file: "{{ webapp_config_dir }}/webapp.conf"
+webapp_db_host: localhost
+webapp_db_name: app
+webapp_db_password: "CHANGEME"
+webapp_api_token: "CHANGEME"

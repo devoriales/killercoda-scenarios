@@ -1,0 +1,5 @@
+---
+# Runs once, only if notified by a task whose result changed.
+- name: Restart webapp
+  ansible.builtin.debug:
+    msg: "webapp would be restarted now (lab placeholder — no real service to bounce)"
