@@ -1,5 +1,10 @@
 # Step 6: Per-Environment Vault Passwords (vault-ids)
 
+> **What is a vault-id?** A **label** attached to an encrypted file (e.g. `dev` or `prod`)
+> paired with its own password. The label is stored in the file's header, so Ansible can hold
+> several passwords at once and automatically pick the one matching each file. This is how you
+> give different environments different keys instead of one password unlocking everything.
+
 Give dev and prod **different** vault passwords, so dev access can't unlock prod secrets —
 and have Ansible pick the right one automatically.
 

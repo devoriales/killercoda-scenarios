@@ -1,5 +1,10 @@
 # Step 1: Understand the Project Structure
 
+> **What is Ansible?** An **agentless** automation tool: from one control machine it
+> configures many remote hosts over plain SSH — nothing to install on the targets. You
+> describe the *desired state* in YAML files (**playbooks**) and Ansible makes each host
+> match it. Runs are **idempotent** — re-running changes nothing once a host already matches.
+
 Acme's Ansible repo lives at `/root/acme`. Move into it — every command in this lab runs
 from here.
 

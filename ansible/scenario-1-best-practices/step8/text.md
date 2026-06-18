@@ -1,5 +1,11 @@
 # Step 8: Git Hygiene — What to Commit, What Never To
 
+> **What is a pre-commit hook?** A check Git runs *before* a commit is recorded; if it fails,
+> the commit is rejected. Here two hooks act as guardrails: **`detect-secrets`** scans for
+> things that look like credentials, and an **ansible-vault** hook refuses any `vault.yml`
+> that isn't encrypted. Together with `.gitignore`, they make leaking a secret hard to do by
+> accident.
+
 Commit the safe things; make the dangerous things impossible to commit.
 
 ```
@@ -29,12 +35,24 @@ git check-ignore .vault_pass.dev .ssh/lab_dev_ed25519
 
 The encrypted `vault.yml` is tracked; `.vault_pass.*` and `.ssh/` are ignored.
 
-Make sure the pre-commit hooks are installed (idempotent — safe to run again):
+Now arm the second net — the pre-commit hooks. Two commands, run once (both are
+idempotent — safe to run again):
 
 ```
-detect-secrets scan > .secrets.baseline
-pre-commit install
+detect-secrets scan > .secrets.baseline   # snapshot today's repo: only NEW secrets get flagged later
+pre-commit install                          # wire the hooks into Git so they run on every commit
 ```{{copy}}
+
+**What each command does:**
+
+- **`pre-commit install`** copies a hook script into `.git/hooks/`. The
+  `.pre-commit-config.yaml` in the repo only *lists* the checks; until you run this, Git
+  ignores it and nothing is checked. After it, every `git commit` runs the hooks first and
+  a failing check rejects the commit.
+- **`detect-secrets scan > .secrets.baseline`** records every secret-looking string that
+  already exists in the repo into a *baseline* file. The hook compares future commits
+  against this baseline and blocks only **new** secrets — so it won't keep tripping over
+  strings it has already seen.
 
 ## Drill: try to leak a secret and watch it get blocked
 

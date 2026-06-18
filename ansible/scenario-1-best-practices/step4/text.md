@@ -1,5 +1,12 @@
 # Step 4: Write a Role the Right Way
 
+> **What is a role?** Ansible's unit of **reuse** — a standard directory layout (`tasks/`,
+> `handlers/`, `templates/`, `defaults/`, `vars/`, `meta/`) that bundles everything needed to
+> configure one piece of software. A playbook *includes* a role and the role's tasks run; the
+> same role drops into any project. Its variables form an **interface**: `defaults/` are the
+> overridable inputs, `vars/` are internal constants — so the role is configurable without
+> editing it.
+
 Understand role structure, variable precedence, and the role-boundary indirection — then
 run the role against the dev nodes.
 

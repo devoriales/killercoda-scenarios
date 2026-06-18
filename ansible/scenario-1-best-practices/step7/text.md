@@ -1,5 +1,11 @@
 # Step 7: The 5-Developer Workflow — Keys & Secrets
 
+> **The two shared secrets of a team.** Access rests on two things: each developer's
+> **SSH keypair** (personal, never shared — onboarding adds a `.pub`, offboarding removes it)
+> and the **vault password** (one shared secret per environment, handed out *out of band* via
+> a password manager). Re-running `bootstrap.yml` is safe because it's **idempotent** — it
+> only adds keys that aren't already authorized.
+
 Onboard another developer without rebuilding anything, and learn how to rotate a shared
 vault password.
 

@@ -58,9 +58,12 @@ command -v git     >/dev/null 2>&1 || apt-get install -y --no-install-recommends
 command -v pip3    >/dev/null 2>&1 || apt-get install -y --no-install-recommends python3-pip >/dev/null 2>&1
 # NOTE: the ubuntu backend has the docker engine but NOT the compose v2 plugin, so the lab
 # uses plain `docker build` / `docker run` (docker/up.sh) — no docker-compose dependency.
-# pre-commit + detect-secrets + ansible-lint: pip first, apt fallback for pre-commit.
-pip3 install --break-system-packages -q pre-commit detect-secrets ansible-lint >/dev/null 2>&1 \
-  || apt-get install -y --no-install-recommends pre-commit >/dev/null 2>&1 || true
+# pre-commit + detect-secrets + ansible-lint. Try pip (with, then without, the PEP-668
+# flag), then apt per-tool so a single failure can't leave the others uninstalled.
+pip_install() { pip3 install --break-system-packages -q "$@" >/dev/null 2>&1 || pip3 install -q "$@" >/dev/null 2>&1; }
+pip_install pre-commit detect-secrets ansible-lint
+command -v pre-commit   >/dev/null 2>&1 || apt-get install -y --no-install-recommends pre-commit   >/dev/null 2>&1 || true
+command -v ansible-lint >/dev/null 2>&1 || pip_install ansible-lint || apt-get install -y --no-install-recommends ansible-lint >/dev/null 2>&1 || true
 
 # --- 2. Lay down the repo tree --------------------------------------------------------
 mkdir -p /root/acme
@@ -510,7 +513,13 @@ printf -- '---\nvault_db_password: dev-Sup3rSecret-DB-pw\nvault_api_token: dev-t
 printf -- '---\nvault_db_password: prod-DB-pw-9z8y7x\nvault_api_token: prod-tok-zzz999\n'          > /tmp/vault_prod.yml
 for env in dev prod; do
   dst="inventories/$env/group_vars/all/vault.yml"
+  regen=0
   if ! head -n1 "$dst" 2>/dev/null | grep -q '^\$ANSIBLE_VAULT'; then
+    regen=1                                                              # missing or plaintext
+  elif ! ansible-vault view "$dst" 2>/dev/null | grep -q '^vault_api_token:'; then
+    regen=1                                                              # stale: encrypted but incomplete
+  fi
+  if [ "$regen" -eq 1 ]; then
     cp "/tmp/vault_${env}.yml" "$dst"
     ansible-vault encrypt --encrypt-vault-id "$env" "$dst" >/dev/null 2>&1 || true
   fi

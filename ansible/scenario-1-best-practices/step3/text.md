@@ -1,5 +1,10 @@
 # Step 3: Inventories, Groups, and Variables
 
+> **What is an inventory?** The list of hosts Ansible manages, sorted into **groups** by
+> role (`webservers`, `dbservers`). Groups let you target many hosts at once and attach
+> config to them through **`group_vars/<group>/`** — variables that automatically apply to
+> every host in that group. One inventory directory per environment keeps dev and prod apart.
+
 See how host grouping and `group_vars` drive configuration.
 
 ```

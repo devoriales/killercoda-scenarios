@@ -1,5 +1,10 @@
 # Step 2: Stand Up the Nodes & Connect with an SSH Key
 
+> **How does Ansible connect?** Over ordinary **SSH**, authenticating with a **keypair**:
+> your *private* key stays with you, its *public* key is installed on each host's
+> `authorized_keys`. Ansible logs in as an unprivileged user and, when a task needs root,
+> escalates with **`become`** (its `sudo` mechanism) — so day-to-day login never needs root.
+
 You'll create your own SSH key, boot the three fake servers, and reach them with Ansible.
 
 ```

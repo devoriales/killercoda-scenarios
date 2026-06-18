@@ -1,5 +1,10 @@
 # Step 5: Introduce Ansible Vault
 
+> **What is Ansible Vault?** Built-in **encryption for secrets** (AES256). It turns a
+> variables file into ciphertext you can safely commit to Git; at runtime Ansible decrypts it
+> in memory using a password you supply, so playbooks read the secret values transparently.
+> No separate secrets store — the encrypted file travels with the code.
+
 This is the heart of the lab — encrypt secrets, keep them usable, and understand the
 indirection pattern.
 
