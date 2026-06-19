@@ -11,38 +11,8 @@
 # every run, so a half-built /root/acme always self-heals.
 set -uo pipefail
 
-# Write the tiny readiness waiter FIRST. foreground.sh just clears the screen and runs this
-# file, so the student never sees the script source or a wait loop being typed into their
-# terminal — only its short progress output.
-cat > /root/wait-ready.sh <<'WAIT'
-#!/bin/bash
-set -uo pipefail
-encrypted() { head -n1 "$1" 2>/dev/null | grep -q '^\$ANSIBLE_VAULT'; }
-ready() {
-  command -v ansible       >/dev/null 2>&1 || return 1
-  command -v ansible-vault >/dev/null 2>&1 || return 1
-  [ -f /root/acme/playbooks/site.yml ] || return 1
-  [ -d /root/acme/.git ] || return 1
-  encrypted /root/acme/inventories/dev/group_vars/all/vault.yml  || return 1
-  encrypted /root/acme/inventories/prod/group_vars/all/vault.yml || return 1
-}
-echo "Preparing the lab environment (installing Ansible, building the node image)..."
-echo "This takes ~2-3 minutes — please wait."
-ELAPSED=0; TIMEOUT=480; GRACE=90
-while ! ready; do
-  if [ "$ELAPSED" -ge "$TIMEOUT" ]; then
-    echo; echo "Still finishing up. If Step 1 looks empty, run:  bash /root/setup.sh"
-    exit 0
-  fi
-  # Self-heal: re-run the idempotent installer every ~30s past the grace period.
-  if [ "$ELAPSED" -ge "$GRACE" ] && [ $((ELAPSED % 30)) -eq 0 ] && [ -f /root/setup.sh ]; then
-    bash /root/setup.sh >/dev/null 2>&1
-  fi
-  printf '.'; sleep 5; ELAPSED=$((ELAPSED + 5))
-done
-echo; echo "Ready! The Acme Ansible repo is at /root/acme — start Step 1."
-WAIT
-chmod +x /root/wait-ready.sh
+# foreground.sh watches /tmp/kc-step1, /tmp/kc-step2, /tmp/kc-ready sentinel files
+# written by setup.sh below and prints named progress stages to the student terminal.
 
 # Outer heredoc is quoted ('SETUP') so nothing expands here. Every file written inside also
 # uses a quoted delimiter so contents (Jinja {{ }}, $ANSIBLE_VAULT, $vars) stay verbatim.
@@ -64,6 +34,7 @@ pip_install() { pip3 install --break-system-packages -q "$@" >/dev/null 2>&1 || 
 pip_install pre-commit detect-secrets ansible-lint
 command -v pre-commit   >/dev/null 2>&1 || apt-get install -y --no-install-recommends pre-commit   >/dev/null 2>&1 || true
 command -v ansible-lint >/dev/null 2>&1 || pip_install ansible-lint || apt-get install -y --no-install-recommends ansible-lint >/dev/null 2>&1 || true
+touch /tmp/kc-step1
 
 # --- 2. Lay down the repo tree --------------------------------------------------------
 mkdir -p /root/acme
@@ -525,6 +496,7 @@ for env in dev prod; do
   fi
 done
 rm -f /tmp/vault_dev.yml /tmp/vault_prod.yml
+touch /tmp/kc-step2
 
 # --- 5. Git repo + pre-commit safety nets (clean baseline) ----------------------------
 # Done BEFORE the slow image build so the readiness gate (which needs .git + encrypted
@@ -541,6 +513,7 @@ if [ ! -d .git ]; then
 fi
 
 echo "[setup] Ansible lab repo ready at /root/acme."
+touch /tmp/kc-ready
 
 # --- 6. Collections + warm the managed-node image (slowest; intentionally LAST) -------
 # The student also builds this in Step 2 via docker/up.sh, so this is only a warm-up and
