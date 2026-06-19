@@ -1,39 +1,10 @@
 #!/bin/bash
 # background.sh — Ansible fundamentals lab.
-# Writes setup.sh (the idempotent installer) and wait-ready.sh, then runs setup.sh.
+# Writes setup.sh (the idempotent installer) then runs it in the background.
+# foreground.sh watches /tmp/kc-step1..3 and /tmp/kc-ready sentinel files
+# written by setup.sh to display named progress stages to the student.
 # Uses `set -uo pipefail` but NOT `set -e`: one failing step must never abort setup.
 set -uo pipefail
-
-# --- readiness waiter (used by foreground.sh) -------------------------------------------
-cat > /root/wait-ready.sh <<'WAIT'
-#!/bin/bash
-set -uo pipefail
-ready() {
-  command -v ansible >/dev/null 2>&1                          || return 1
-  docker ps --format '{{.Names}}' 2>/dev/null | grep -qx web1 || return 1
-  docker ps --format '{{.Names}}' 2>/dev/null | grep -qx web2 || return 1
-  docker ps --format '{{.Names}}' 2>/dev/null | grep -qx db1  || return 1
-  [ -f /root/lab/.ready ]                                     || return 1
-}
-echo "Preparing the lab environment (installing Ansible, building the node image, starting managed nodes)..."
-echo "This takes 2-4 minutes — please wait."
-ELAPSED=0; TIMEOUT=480; GRACE=60
-while ! ready; do
-  if [ "$ELAPSED" -ge "$TIMEOUT" ]; then
-    echo
-    echo "Setup is taking longer than expected."
-    echo "If the lab appears stuck, run:  bash /root/setup.sh"
-    exit 0
-  fi
-  if [ "$ELAPSED" -ge "$GRACE" ] && [ $(( ELAPSED % 30 )) -eq 0 ] && [ -f /root/setup.sh ]; then
-    bash /root/setup.sh >/dev/null 2>&1 &
-  fi
-  printf '.'; sleep 5; ELAPSED=$(( ELAPSED + 5 ))
-done
-echo
-echo "Ready! Your workspace is at /root/lab — start Step 1."
-WAIT
-chmod +x /root/wait-ready.sh
 
 # --- idempotent installer ---------------------------------------------------------------
 # The outer heredoc uses a quoted delimiter ('SETUP') so nothing inside is expanded here.
@@ -50,6 +21,7 @@ command -v ansible >/dev/null 2>&1 || {
   apt-get update -y -qq >/dev/null 2>&1
   apt-get install -y -qq --no-install-recommends ansible >/dev/null 2>&1
 }
+touch /tmp/kc-step1
 
 # 2. SSH key for root (the control node) ─────────────────────────────────────────────────
 mkdir -p /root/.ssh && chmod 700 /root/.ssh
@@ -90,6 +62,7 @@ if [ "$CURRENT_HASH" != "$STORED_HASH" ] || ! docker image inspect ansible-node:
   docker build -t ansible-node:fundamentals "$IMGDIR" -q >/dev/null 2>&1
   echo "$CURRENT_HASH" > "$IMGDIR/.build_hash"
 fi
+touch /tmp/kc-step2
 
 # 4. Start managed nodes ──────────────────────────────────────────────────────────────────
 _start_node() {
@@ -103,6 +76,7 @@ _start_node() {
 _start_node web1 2201
 _start_node web2 2202
 _start_node db1  2203
+touch /tmp/kc-step3
 
 # 5. Wait for SSH on all nodes ────────────────────────────────────────────────────────────
 _wait_ssh() {
@@ -141,6 +115,7 @@ mkdir -p /root/lab
 
 # Signal that setup is complete
 touch /root/lab/.ready
+touch /tmp/kc-ready
 SETUP
 chmod +x /root/setup.sh
 
