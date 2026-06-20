@@ -1,10 +1,35 @@
 #!/bin/bash
 # background.sh — Ansible fundamentals lab.
 # Writes setup.sh (the idempotent installer) then runs it in the background.
-# foreground.sh watches /tmp/kc-step1..3 and /tmp/kc-ready sentinel files
+# foreground.sh clears the screen and runs /root/progress.sh (written below).
+# progress.sh watches /tmp/kc-step1..3 and /tmp/kc-ready sentinel files
 # written by setup.sh to display named progress stages to the student.
 # Uses `set -uo pipefail` but NOT `set -e`: one failing step must never abort setup.
 set -uo pipefail
+
+# Write the progress display script FIRST so foreground.sh can run it immediately.
+cat > /root/progress.sh <<'PROGRESS'
+#!/bin/bash
+steps=("Installing Ansible" "Building managed-node image" "Starting web1, web2, db1" "Configuring SSH access")
+signals=("/tmp/kc-step1" "/tmp/kc-step2" "/tmp/kc-step3" "/tmp/kc-ready")
+
+echo ""
+echo "  Preparing your Ansible lab (~3 minutes)..."
+echo ""
+
+for i in "${!signals[@]}"; do
+  while [ ! -f "${signals[$i]}" ]; do
+    printf "\r  ⏳  %s..." "${steps[$i]}"
+    sleep 1
+  done
+  printf "\r  ✅  %-45s\n" "${steps[$i]}"
+done
+
+echo ""
+echo "  Lab ready!  Your workspace is at /root/lab"
+echo ""
+PROGRESS
+chmod +x /root/progress.sh
 
 # --- idempotent installer ---------------------------------------------------------------
 # The outer heredoc uses a quoted delimiter ('SETUP') so nothing inside is expanded here.

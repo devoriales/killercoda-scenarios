@@ -11,8 +11,32 @@
 # every run, so a half-built /root/acme always self-heals.
 set -uo pipefail
 
-# foreground.sh watches /tmp/kc-step1, /tmp/kc-step2, /tmp/kc-ready sentinel files
-# written by setup.sh below and prints named progress stages to the student terminal.
+# Write the progress display script FIRST so foreground.sh can run it immediately.
+# foreground.sh clears the screen and runs this file as a subprocess so the student
+# never sees the script source — only its output.
+cat > /root/progress.sh <<'PROGRESS'
+#!/bin/bash
+steps=("Installing Ansible & tools" "Writing the Acme repository" "Initialising Git & secrets")
+signals=("/tmp/kc-step1" "/tmp/kc-step2" "/tmp/kc-ready")
+
+echo ""
+echo "  Preparing your Ansible lab (~3 minutes)..."
+echo ""
+
+for i in "${!signals[@]}"; do
+  while [ ! -f "${signals[$i]}" ]; do
+    printf "\r  ⏳  %s..." "${steps[$i]}"
+    sleep 1
+  done
+  printf "\r  ✅  %-45s\n" "${steps[$i]}"
+done
+
+echo ""
+echo "  Lab ready!  The Acme repo is at /root/acme"
+echo "  (The managed-node Docker image builds in the background — Step 2 starts it.)"
+echo ""
+PROGRESS
+chmod +x /root/progress.sh
 
 # Outer heredoc is quoted ('SETUP') so nothing expands here. Every file written inside also
 # uses a quoted delimiter so contents (Jinja {{ }}, $ANSIBLE_VAULT, $vars) stay verbatim.
