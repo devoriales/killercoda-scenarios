@@ -72,7 +72,7 @@ FROM python:3.12-slim
 RUN apt-get update && \
     apt-get install -y --no-install-recommends openssh-server sudo && \
     rm -rf /var/lib/apt/lists/* && \
-    mkdir /run/sshd && \
+    mkdir -p /run/sshd && \
     useradd -m -s /bin/bash ansible && \
     echo 'ansible ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/ansible && \
     chmod 440 /etc/sudoers.d/ansible && \
