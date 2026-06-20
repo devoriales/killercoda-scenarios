@@ -59,6 +59,14 @@ IMGDIR=/opt/ansible-fundamentals-node
 mkdir -p "$IMGDIR"
 cp /root/.ssh/id_ed25519.pub "$IMGDIR/authorized_keys"
 
+cat > "$IMGDIR/entrypoint.sh" <<'ENTRYPOINT'
+#!/bin/bash
+mkdir -p /run/sshd      # OpenSSH privilege separation requires this at runtime
+ssh-keygen -A -q        # ensure host keys exist even on a fresh container
+exec /usr/sbin/sshd -D -e
+ENTRYPOINT
+chmod +x "$IMGDIR/entrypoint.sh"
+
 cat > "$IMGDIR/Dockerfile" <<'DOCKERFILE'
 FROM python:3.12-slim
 RUN apt-get update && \
@@ -74,17 +82,19 @@ RUN apt-get update && \
 COPY authorized_keys /home/ansible/.ssh/authorized_keys
 RUN chown -R ansible:ansible /home/ansible/.ssh && \
     chmod 600 /home/ansible/.ssh/authorized_keys
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 EXPOSE 22
-CMD ["/usr/sbin/sshd", "-D"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 DOCKERFILE
 
 # Only rebuild if the Dockerfile or key changed
 CURRENT_HASH=""
 STORED_HASH=""
-CURRENT_HASH=$(md5sum "$IMGDIR/Dockerfile" "$IMGDIR/authorized_keys" 2>/dev/null | md5sum | cut -d' ' -f1)
+CURRENT_HASH=$(md5sum "$IMGDIR/Dockerfile" "$IMGDIR/authorized_keys" "$IMGDIR/entrypoint.sh" 2>/dev/null | md5sum | cut -d' ' -f1)
 STORED_HASH=$(cat "$IMGDIR/.build_hash" 2>/dev/null || true)
 if [ "$CURRENT_HASH" != "$STORED_HASH" ] || ! docker image inspect ansible-node:fundamentals >/dev/null 2>&1; then
-  docker build -t ansible-node:fundamentals "$IMGDIR" -q >/dev/null 2>&1
+  docker build -t ansible-node:fundamentals "$IMGDIR" -q 2>&1 | tee -a /var/log/ansible-lab-setup.log >/dev/null
   echo "$CURRENT_HASH" > "$IMGDIR/.build_hash"
 fi
 touch /tmp/kc-step2
@@ -96,7 +106,13 @@ _start_node() {
   docker ps --format '{{.Names}}' | grep -qx "$name" && return 0
   # Remove a stopped container with the same name, if any
   docker rm -f "$name" >/dev/null 2>&1 || true
-  docker run -d --name "$name" --hostname "$name" -p "${port}:22" ansible-node:fundamentals >/dev/null 2>&1
+  docker run -d --name "$name" --hostname "$name" --restart=unless-stopped \
+    -p "${port}:22" ansible-node:fundamentals >/dev/null
+  sleep 2
+  if ! docker ps --format '{{.Names}}' | grep -qx "$name"; then
+    echo "[setup] WARNING: $name exited immediately — check: docker logs $name" >&2
+    docker logs "$name" >> /var/log/ansible-lab-setup.log 2>&1 || true
+  fi
 }
 _start_node web1 2201
 _start_node web2 2202
