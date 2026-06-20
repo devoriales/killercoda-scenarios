@@ -20,7 +20,7 @@ steps=("Installing Ansible & tools" "Writing the Acme repository" "Initialising 
 signals=("/tmp/kc-step1" "/tmp/kc-step2" "/tmp/kc-ready")
 
 echo ""
-echo "  Preparing your Ansible lab (~3 minutes)..."
+echo "  Preparing your Ansible lab, have a coffee (~3 minutes)..."
 echo ""
 
 for i in "${!signals[@]}"; do
