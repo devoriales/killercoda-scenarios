@@ -1,0 +1,51 @@
+{
+  "title": "Drive Ansible from a Web UI with Semaphore",
+  "description": "Stand up Semaphore UI in the browser and use it to run Ansible against real managed nodes: log in to a pre-seeded project, wire up an inventory, build a task template, and run a playbook against web1/web2/db1 — watching the output stream live.",
+  "difficulty": "Intermediate",
+  "time": "30",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "background.sh",
+      "foreground": "foreground.sh"
+    },
+    "steps": [
+      {
+        "title": "Open Semaphore in your browser",
+        "text": "step1/text.md",
+        "verify": "step1/verify.sh"
+      },
+      {
+        "title": "Meet the managed nodes & the project",
+        "text": "step2/text.md",
+        "verify": "step2/verify.sh"
+      },
+      {
+        "title": "Create an inventory",
+        "text": "step3/text.md",
+        "verify": "step3/verify.sh"
+      },
+      {
+        "title": "Build a task template",
+        "text": "step4/text.md",
+        "verify": "step4/verify.sh"
+      },
+      {
+        "title": "Run the playbook & watch it live",
+        "text": "step5/text.md",
+        "verify": "step5/verify.sh"
+      },
+      {
+        "title": "Confirm the change on a node",
+        "text": "step6/text.md",
+        "verify": "step6/verify.sh"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "ubuntu"
+  }
+}

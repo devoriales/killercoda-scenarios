@@ -3,6 +3,7 @@
   "description": "Hands-on Ansible training: fundamentals, best practices, Vault, and team workflows.",
   "items": [
     { "path": "scenario-0-fundamentals" },
-    { "path": "scenario-1-best-practices" }
+    { "path": "scenario-1-best-practices" },
+    { "path": "scenario-2-semaphore" }
   ]
 }
