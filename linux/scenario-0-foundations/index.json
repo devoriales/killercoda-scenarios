@@ -1,0 +1,40 @@
+{
+  "title": "Linux Foundations: Filesystem, Inodes, and Text Processing",
+  "description": "Navigate the Linux filesystem, learn why a file name is not the file, and investigate a real web server log to find an intruder using only grep, awk, and pipes.",
+  "difficulty": "Beginner",
+  "time": "30",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "background.sh"
+    },
+    "steps": [
+      {
+        "title": "Find your way around the filesystem",
+        "text": "step1/text.md",
+        "verify": "step1/verify.sh"
+      },
+      {
+        "title": "A name is not the file",
+        "text": "step2/text.md",
+        "verify": "step2/verify.sh"
+      },
+      {
+        "title": "Read the metadata",
+        "text": "step3/text.md",
+        "verify": "step3/verify.sh"
+      },
+      {
+        "title": "Catch the scanner",
+        "text": "step4/text.md",
+        "verify": "step4/verify.sh"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "ubuntu"
+  }
+}

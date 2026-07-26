@@ -1,0 +1,7 @@
+{
+  "title": "Linux for DevOps",
+  "description": "Hands-on Linux for engineers: filesystem and text processing, users and permissions, systemd and storage, networking and hardening, and container primitives.",
+  "items": [
+    { "path": "scenario-0-foundations" }
+  ]
+}
