@@ -24,6 +24,10 @@ You started with a log file and a vague report. You finish with two concrete fin
 
 ## Next
 
-This lab covers Module 1 of the full Linux course. The written lessons go deeper on each topic, including the kernel and user space split, system calls, and the environment options for the rest of the course.
+This lab covers Module 1 of the full Linux course, which is free.
 
-Continue at [devoriales.com](https://devoriales.com), where the next module covers users and permissions, process lifecycle and systemd, storage and LVM, and package management.
+**[Linux for DevOps Engineers on devoriales.com](https://devoriales.com/quiz/25/linux-for-devops-engineers)**
+
+The four written lessons behind this lab go deeper than a terminal session can: why a Debian userland can run an Ubuntu built kernel, what a system call actually is and how to watch one happen, the Filesystem Hierarchy Standard, and the three streams that make pipelines work. Each ends with a knowledge check.
+
+After that, Module 2 covers users and permissions, process lifecycle and systemd, storage and LVM, and package management.
