@@ -1,41 +1,61 @@
-# One host, everything you have learned
+# "Get it online, and don't let it wake us up"
 
-This is the machine every lesson in this course was a piece of.
+A four person team has been running their analytics dashboard on a laptop under someone's desk. It has outgrown that.
 
-You are going to build a gateway: an application serving over a proxy, its data on a volume you can grow, its service account unable to log in, its ports closed except the ones you name, and something checking all of it on a schedule.
+You have been handed a fresh VM, an application that serves HTTP on port 8080, and one sentence of requirements: **get it online, and don't let it be the thing that wakes us up.**
 
-There is no new material here. What is new is that nothing is done for you, and that at the end a script decides whether you are finished.
+That is the whole brief, and it is the brief you will actually receive in a job. Nobody hands you a checklist. They hand you a machine and an expectation.
 
-## The nine requirements
+## What is behind that sentence
 
-| # | Requirement |
+- **The dashboard holds customer data.** Not a lot, but enough that "somebody got in through the analytics box" would be a bad week.
+- **It faces the internet.** People will open it on their phones.
+- **It will grow.** More data sources are coming, and the volume it writes to has to get bigger without downtime.
+- **Nobody is watching it.** There is no ops team. If it breaks at 2am on a Sunday it stays broken until somebody happens to look.
+- **You will not be maintaining it.** In six months this is someone else's problem, and they will have to understand what you did from the machine alone.
+
+## What goes wrong if you cut a corner
+
+Every requirement here exists because of an ordinary failure, not a theoretical one:
+
+| Skip this | And this happens |
 |---|---|
-| 1 | Data on an LVM volume, mounted through `/etc/fstab` |
-| 2 | A locked service account owning it |
-| 3 | SSH key-only, listening on a non-default port |
-| 4 | Default-deny firewall with connection tracking |
-| 5 | The application in a rootless container, on loopback |
-| 6 | A reverse proxy in front, managed by systemd |
-| 7 | Resource limits that actually reach the kernel |
-| 8 | A health check that exercises the real path |
-| 9 | A timer, so a failure announces itself |
+| LVM and an `fstab` entry | The disk fills in month three, or the volume is not mounted after a reboot and the app quietly writes into the root filesystem |
+| A locked service account | The application runs as root, and one bug in it is one bug away from the whole machine |
+| SSH hardening | The box sits on the internet accepting passwords, and the logs fill with login attempts within hours |
+| A firewall | Every port anything opens is reachable by everyone, including things you did not know were listening |
+| A container on loopback | The application is directly exposed and the proxy in front of it is decoration |
+| A reverse proxy | You have no single place to terminate TLS, route by name, or control access |
+| Resource limits | One runaway query takes the machine down, and takes SSH with it, so you cannot get in to fix it |
+| A health check that really works | The dashboard is broken for a week and a customer notices first |
+| A timer | The health check you wrote is never run |
 
-**Build them in that order.** Each depends on the ones before it, and taking them out of order is how people lock themselves out.
+The last two are the ones people skip, and they are the ones that turn a small problem into a long one.
 
-## Your instrument
+## How you will know you are finished
+
+Not by running the commands. By running this:
 
 ```
 gateway-validate
 ```
 
-Run it now and it will tell you how far you are from done. Run it after every step. It reads the running system, never a file you wrote, which means it will catch things you were certain you had configured.
+It inspects the **running system** and reports pass or fail on all nine requirements. It does not read your notes and it does not care what you meant to do.
 
-## The one difference from a real host
+That is the real subject of this lab: proving your own work instead of believing it.
 
-This VM has no spare disks, so a 1 GB file has been attached as a loop device for you to practise LVM on. It behaves like a real block device for everything here.
+## Two practical notes
+
+There is no new material here. Every technique came from an earlier module. What is new is that nothing is done for you, and the requirements depend on each other in an order that only becomes obvious when you get it wrong. **Build them in the order the steps give you.**
+
+This VM has no spare disks, so a 1 GB file has been attached as a loop device for you to practise LVM on. It behaves like a real block device for everything you will do here.
 
 ```bash
 losetup -a
 ```{{exec}}
 
-Nothing else has been built. Start with `gateway-validate` and see what you are up against.
+Now find out what you are up against.
+
+```bash
+gateway-validate
+```{{exec}}
