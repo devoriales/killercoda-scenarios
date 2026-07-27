@@ -1,0 +1,40 @@
+{
+  "title": "Networking and Security: Diagnose, Harden, Filter, Schedule",
+  "description": "A metrics endpoint the load balancer cannot reach, an SSH daemon nobody has tightened, no firewall at all, and no way to find out when any of it breaks. Work the diagnostic ladder to the real cause, harden sshd without locking yourself out, write a stateful nftables ruleset, and put a health check on a systemd timer.",
+  "difficulty": "Intermediate",
+  "time": "40",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "background.sh"
+    },
+    "steps": [
+      {
+        "title": "Find why the endpoint is unreachable",
+        "text": "step1/text.md",
+        "verify": "step1/verify.sh"
+      },
+      {
+        "title": "Harden sshd without locking yourself out",
+        "text": "step2/text.md",
+        "verify": "step2/verify.sh"
+      },
+      {
+        "title": "Write a firewall that does not break outbound traffic",
+        "text": "step3/text.md",
+        "verify": "step3/verify.sh"
+      },
+      {
+        "title": "Schedule a check that reports its own failure",
+        "text": "step4/text.md",
+        "verify": "step4/verify.sh"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "ubuntu"
+  }
+}

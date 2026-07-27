@@ -1,0 +1,40 @@
+{
+  "title": "Core System Administration: Permissions, systemd, and Packages",
+  "description": "Take over a small analytics host. Close a world writable log, fix a shared directory that keeps losing its group, grant one engineer read access without handing over the group, repair a systemd unit that fails with 203/EXEC, and pin a package so an upgrade cannot move it.",
+  "difficulty": "Intermediate",
+  "time": "35",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "background.sh"
+    },
+    "steps": [
+      {
+        "title": "Close the permissions you inherited",
+        "text": "step1/text.md",
+        "verify": "step1/verify.sh"
+      },
+      {
+        "title": "Grant one person access, not a group",
+        "text": "step2/text.md",
+        "verify": "step2/verify.sh"
+      },
+      {
+        "title": "Repair a service that will not start",
+        "text": "step3/text.md",
+        "verify": "step3/verify.sh"
+      },
+      {
+        "title": "Find the owner, then hold it still",
+        "text": "step4/text.md",
+        "verify": "step4/verify.sh"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "ubuntu"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "title": "Capstone: Build and Prove a Hardened Application Gateway",
+  "description": "Assemble everything this course covered into one host: LVM storage owned by a locked service account, SSH on a non-default port, a default-deny firewall, a rootless container on loopback behind a reverse proxy, and a health check on a timer. Then run the validation script and get every check to pass.",
+  "difficulty": "Advanced",
+  "time": "50",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "background.sh"
+    },
+    "steps": [
+      { "title": "Storage and the account that owns it", "text": "step1/text.md", "verify": "step1/verify.sh" },
+      { "title": "SSH on a port of your choosing", "text": "step2/text.md", "verify": "step2/verify.sh" },
+      { "title": "Firewall, and the application behind it", "text": "step3/text.md", "verify": "step3/verify.sh" },
+      { "title": "Proxy, health check, and proof", "text": "step4/text.md", "verify": "step4/verify.sh" }
+    ],
+    "finish": { "text": "finish.md" }
+  },
+  "backend": { "imageid": "ubuntu" },
+  "assets": {
+    "host01": [
+      { "file": "gateway-validate", "target": "/root/assets", "chmod": "755" }
+    ]
+  }
+}

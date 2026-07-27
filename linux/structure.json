@@ -2,6 +2,20 @@
   "title": "Linux for DevOps",
   "description": "Hands-on Linux for engineers: filesystem and text processing, users and permissions, systemd and storage, networking and hardening, and container primitives. Part of the full course at https://devoriales.com/quiz/25/linux-for-devops-engineers",
   "items": [
-    { "path": "scenario-0-foundations" }
+    {
+      "path": "scenario-0-foundations"
+    },
+    {
+      "path": "scenario-1-sysadmin"
+    },
+    {
+      "path": "scenario-2-network-security"
+    },
+    {
+      "path": "scenario-3-containers"
+    },
+    {
+      "path": "scenario-4-capstone"
+    }
   ]
 }

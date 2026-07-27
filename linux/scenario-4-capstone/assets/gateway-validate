@@ -1,0 +1,182 @@
+#!/usr/bin/env bash
+#
+# Capstone validation. Nine requirements, each checked against the RUNNING system
+# rather than against a file you wrote. Exit 0 only when every one passes.
+#
+#   gateway-validate        run every check
+#   gateway-validate -v     also print what each check found
+#
+# Read it. It is ordinary shell, and asserting your own work is the technique here
+# that is worth taking to every system you build.
+
+set -uo pipefail
+
+VERBOSE=0
+[[ "${1:-}" == "-v" ]] && VERBOSE=1
+
+PASS=0; FAIL=0
+APP_USER="${APP_USER:-appsvc}"
+VG="${VG:-vg_gateway}"
+MOUNT="${MOUNT:-/srv/gateway}"
+SSH_PORT="${SSH_PORT:-2222}"
+
+ok()   { printf '  \033[32mPASS\033[0m  %s\n' "$1"; PASS=$((PASS+1)); }
+bad()  { printf '  \033[31mFAIL\033[0m  %s\n'   "$1"; printf '        %s\n' "$2"; FAIL=$((FAIL+1)); }
+note() { [ "$VERBOSE" -eq 1 ] && printf '        %s\n' "$1"; return 0; }
+head_() { printf '\n%s\n' "$1"; }
+
+head_ "1. Storage on LVM, mounted, and owned by the service"
+if vgs "$VG" >/dev/null 2>&1; then
+  ok "volume group $VG exists ($(vgs --noheadings -o vg_size "$VG" | tr -d ' '))"
+else
+  bad "volume group $VG does not exist" "pvcreate the loop device, then: vgcreate $VG /dev/loopN"
+fi
+
+if findmnt -n "$MOUNT" >/dev/null 2>&1; then
+  ok "$MOUNT is mounted ($(findmnt -no FSTYPE "$MOUNT") on $(findmnt -no SOURCE "$MOUNT"))"
+else
+  bad "$MOUNT is not mounted" "Create an LV, mkfs it, and mount it there"
+fi
+
+if grep -qE "^[^#].*[[:space:]]${MOUNT}[[:space:]]" /etc/fstab 2>/dev/null; then
+  ok "$MOUNT has an /etc/fstab entry, so it survives a reboot"
+else
+  bad "$MOUNT is not in /etc/fstab" "A hand mount is gone after a reboot. Add it, then test with mount -a"
+fi
+
+OWNER=$(stat -c '%U:%G' "$MOUNT" 2>/dev/null || echo missing)
+if [ "$OWNER" = "${APP_USER}:${APP_USER}" ]; then
+  ok "$MOUNT is owned by ${APP_USER}:${APP_USER}"
+else
+  bad "$MOUNT is owned by $OWNER, expected ${APP_USER}:${APP_USER}" "chown -R ${APP_USER}:${APP_USER} $MOUNT"
+fi
+
+head_ "2. A restricted service account"
+if getent passwd "$APP_USER" >/dev/null; then
+  SH=$(getent passwd "$APP_USER" | cut -d: -f7)
+  if [ "$SH" = "/usr/sbin/nologin" ] || [ "$SH" = "/bin/false" ]; then
+    ok "$APP_USER exists with a nologin shell (uid $(id -u "$APP_USER"))"
+  else
+    bad "$APP_USER has shell $SH" "usermod -s /usr/sbin/nologin $APP_USER"
+  fi
+  if [ "$(passwd -S "$APP_USER" 2>/dev/null | awk '{print $2}')" = "L" ]; then
+    ok "$APP_USER has no usable password"
+  else
+    bad "$APP_USER is not locked" "passwd -l $APP_USER"
+  fi
+else
+  bad "$APP_USER does not exist" "useradd --system --shell /usr/sbin/nologin $APP_USER"
+fi
+
+head_ "3. SSH hardened, key only, on a non-default port"
+SSHD=$(sshd -T 2>/dev/null)
+if [ -z "$SSHD" ]; then
+  bad "sshd -T produced nothing" "The config may not parse. Check with: sshd -t"
+else
+  for pair in "passwordauthentication no" "kbdinteractiveauthentication no"; do
+    k=${pair% *}; want=${pair#* }
+    got=$(awk -v k="$k" '$1==k{print $2; exit}' <<<"$SSHD")
+    if [ "$got" = "$want" ]; then ok "sshd $k = $want"
+    else bad "sshd $k = ${got:-unset}, expected $want" "Set it in a drop-in, then sshd -t && systemctl restart ssh"; fi
+  done
+
+  # The daemon's opinion, and then what is actually listening. They can disagree.
+  if awk '$1=="port"{print $2}' <<<"$SSHD" | grep -qx "$SSH_PORT"; then
+    ok "sshd config resolves to port $SSH_PORT"
+  else
+    bad "sshd config does not include port $SSH_PORT" "Add 'Port $SSH_PORT' to a drop-in, keeping 22 until the new one is proven"
+  fi
+
+  if ss -tlnH | awk '{print $4}' | grep -qE "[:.]${SSH_PORT}\$"; then
+    ok "something is actually listening on $SSH_PORT"
+  else
+    bad "nothing is listening on $SSH_PORT, whatever sshd -T says" \
+        "On Ubuntu 24.04 ssh is socket activated: systemctl daemon-reload && systemctl restart ssh.socket"
+  fi
+fi
+
+head_ "4. Firewall present, default deny, with connection tracking"
+if nft list table inet filter >/dev/null 2>&1; then
+  RS=$(nft list table inet filter)
+  if sed -n '/chain input/,/}/p' <<<"$RS" | grep -q 'policy drop'; then ok "input chain policy is drop"
+  else bad "input chain policy is not drop" "A default-accept firewall only blocks what you already thought of"; fi
+  if grep -qE 'ct state.*established' <<<"$RS"; then ok "connection tracking rule present"
+  else bad "no 'ct state established,related accept' rule" "Without it outbound breaks while inbound ssh keeps working"; fi
+  for p in "$SSH_PORT" 80; do
+    if grep -qE "tcp dport ($p|\{[^}]*\b$p\b[^}]*\})" <<<"$RS"; then ok "port $p accepted"
+    else bad "port $p is not accepted" "Add: tcp dport $p accept"; fi
+  done
+else
+  bad "no inet filter table loaded" "nft -c -f the file first, then nft -f it"
+fi
+
+head_ "5. Application in a rootless container, on loopback"
+CNAME=$(su - "$APP_USER" -s /bin/bash -c 'podman ps --format "{{.Names}}"' 2>/dev/null | head -1)
+if [ -n "$CNAME" ]; then
+  CPID=$(su - "$APP_USER" -s /bin/bash -c "podman inspect --format '{{.State.Pid}}' $CNAME" 2>/dev/null)
+  RUNAS=$(ps -o user= -p "$CPID" 2>/dev/null | tr -d ' ')
+  if [ -n "$RUNAS" ] && [ "$RUNAS" != "root" ]; then ok "container '$CNAME' runs as host user $RUNAS (pid $CPID)"
+  else bad "container host process runs as ${RUNAS:-unknown}" "Start it as $APP_USER, not root"; fi
+
+  BIND=$(ss -tlnH 'sport = :8080' | awk '{print $4}' | head -1)
+  if [[ "$BIND" == 127.0.0.1:* ]]; then ok "container published on loopback only ($BIND)"
+  else bad "port 8080 is bound to ${BIND:-nothing}" "Publish with -p 127.0.0.1:8080:80 so only the proxy reaches it"; fi
+else
+  bad "no running container for $APP_USER" "su - $APP_USER -s /bin/bash -c 'podman run -d ...'"
+fi
+
+head_ "6. Reverse proxy, managed by systemd"
+if systemctl is-active --quiet nginx; then
+  ok "nginx is active"
+  if systemctl is-enabled --quiet nginx 2>/dev/null; then ok "nginx is enabled at boot"
+  else bad "nginx is not enabled" "systemctl enable nginx"; fi
+  IP=$(hostname -I | awk '{print $1}')
+  CODE=$(curl -s --max-time 10 -o /dev/null -w '%{http_code}' "http://${IP}/" || true)
+  if [ "$CODE" = "200" ]; then ok "http://${IP}/ returns 200 through the proxy"
+  else bad "http://${IP}/ returned '${CODE}'" "nginx -t && systemctl status nginx --no-pager"; fi
+else
+  bad "nginx is not active" "nginx -t && systemctl enable --now nginx"
+fi
+
+head_ "7. Resource limits actually reaching the kernel"
+CPID2=$(su - "$APP_USER" -s /bin/bash -c "podman inspect --format '{{.State.Pid}}' ${CNAME:-none}" 2>/dev/null || true)
+if [ -n "$CPID2" ] && [ "$CPID2" != "0" ] && [ -r "/proc/$CPID2/cgroup" ]; then
+  CG=$(cut -d: -f3 "/proc/$CPID2/cgroup")
+  MEM=$(cat "/sys/fs/cgroup${CG}/memory.max" 2>/dev/null || echo max)
+  if [ "$MEM" != "max" ] && [ -n "$MEM" ]; then ok "container has a memory ceiling in the kernel ($MEM bytes)"
+  else bad "container has no memory limit (memory.max = $MEM)" "Start it with --memory=64m"; fi
+else
+  bad "could not read the container's cgroup" "Is the container running?"
+fi
+
+head_ "8. A health check that exercises the real function"
+HC=/usr/local/bin/gateway-healthcheck
+if [ -x "$HC" ]; then
+  if "$HC" >/dev/null 2>&1; then ok "$HC exits 0 against a healthy system"
+  else bad "$HC exits non-zero right now" "Run it directly to see why: $HC"; fi
+  if ENDPOINT="http://127.0.0.1:9/" TIMEOUT=3 "$HC" >/dev/null 2>&1; then
+    bad "$HC exits 0 against an endpoint that cannot answer" "A check that always passes is worse than no check"
+  else
+    ok "$HC correctly reports failure when the endpoint is unreachable"
+  fi
+else
+  bad "$HC is missing or not executable" "Write it, then chmod 755 $HC"
+fi
+
+head_ "9. The check runs on a schedule"
+if systemctl is-active --quiet gateway-healthcheck.timer 2>/dev/null; then
+  ok "gateway-healthcheck.timer is active"
+  if systemctl is-enabled --quiet gateway-healthcheck.timer 2>/dev/null; then ok "timer is enabled at boot"
+  else bad "timer is not enabled" "systemctl enable gateway-healthcheck.timer"; fi
+else
+  bad "gateway-healthcheck.timer is not active" "systemctl enable --now gateway-healthcheck.timer"
+fi
+
+FAILED=$(systemctl --failed --no-legend --plain 2>/dev/null | awk '{print $1}' | tr '\n' ' ' | sed 's/ $//')
+if [ -z "$FAILED" ]; then ok "no systemd units are in a failed state"
+else bad "failed units: $FAILED" "Investigate, then systemctl reset-failed"; fi
+
+printf '\n────────────────────────────────────────\n'
+printf '  %d passed, %d failed\n' "$PASS" "$FAIL"
+[ "$FAIL" -eq 0 ] && { printf '  Gateway meets every requirement.\n\n'; exit 0; }
+printf '  Not there yet.\n\n'; exit 1

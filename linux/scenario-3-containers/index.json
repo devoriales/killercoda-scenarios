@@ -1,0 +1,40 @@
+{
+  "title": "Container Primitives: Build One By Hand, Then Run It Properly",
+  "description": "Create namespaces with unshare and a memory limit with a cgroup, watch the kernel enforce both, then run a real container as an unprivileged user with no daemon and no root, and put a reverse proxy in front of it so nothing but the proxy is exposed.",
+  "difficulty": "Intermediate",
+  "time": "40",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "background.sh"
+    },
+    "steps": [
+      {
+        "title": "Make a namespace by hand",
+        "text": "step1/text.md",
+        "verify": "step1/verify.sh"
+      },
+      {
+        "title": "Make the kernel enforce a limit",
+        "text": "step2/text.md",
+        "verify": "step2/verify.sh"
+      },
+      {
+        "title": "Run a container with no root and no daemon",
+        "text": "step3/text.md",
+        "verify": "step3/verify.sh"
+      },
+      {
+        "title": "Put a proxy in front of it",
+        "text": "step4/text.md",
+        "verify": "step4/verify.sh"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "ubuntu"
+  }
+}

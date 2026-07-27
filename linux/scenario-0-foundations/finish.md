@@ -28,6 +28,6 @@ This lab covers Module 1 of the full Linux course, which is free.
 
 **[Linux for DevOps Engineers on devoriales.com](https://devoriales.com/quiz/25/linux-for-devops-engineers)**
 
-The four written lessons behind this lab go deeper than a terminal session can: why a Debian userland can run an Ubuntu built kernel, what a system call actually is and how to watch one happen, the Filesystem Hierarchy Standard, and the three streams that make pipelines work. Each ends with a knowledge check.
+The four written lessons behind this lab go deeper than a terminal session can: why two different Ubuntu userlands both report the very same kernel, what a system call actually is and how to watch one happen, the Filesystem Hierarchy Standard, and the three streams that make pipelines work. Each ends with a knowledge check.
 
 After that, Module 2 covers users and permissions, process lifecycle and systemd, storage and LVM, and package management.
