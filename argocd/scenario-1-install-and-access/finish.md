@@ -30,5 +30,22 @@ You have Argo CD running but nothing deployed through it. The next thing to lear
 `Application` resource: what its fields mean, how sync status differs from health status,
 and why an app can be `Synced` and still broken.
 
-The full course, with the k3d setup for running this locally rather than in a browser,
-is on [devoriales.com](https://devoriales.com).
+### Continue with the course
+
+This lab is **Module 2** of
+**[Argo CD for Beginners: Foundations and First Deployments](https://devoriales.com/quiz/26/argo-cd-for-beginners-foundations-first-deployments)**
+on devoriales.com. It is free, and it covers:
+
+| Module | What it covers |
+| --- | --- |
+| 1 | GitOps and Argo CD foundations: drift, push versus pull, architecture |
+| 2 | Installation and first setup, including everything in this lab |
+| 3 | Core concepts: the `Application` resource, `AppProject`, sync versus health |
+| 4 | Deploying with plain YAML, Kustomize, Helm, and OCI charts |
+
+The course runs on a local k3d cluster rather than a browser VM, which is the setup you
+keep for the later modules. Every command in it was executed before it was published.
+
+The runnable files are in
+**[github.com/devoriales/argocd-beginner](https://github.com/devoriales/argocd-beginner)**,
+so you can clone and follow along instead of copying from a page.
