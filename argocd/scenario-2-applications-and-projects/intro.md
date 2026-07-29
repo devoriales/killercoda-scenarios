@@ -33,7 +33,7 @@ public repo the full course uses.
 ## Part of a course
 
 This scenario covers Module 3 of the free
-[Argo CD for Beginners](https://devoriales.com/course/26) course on devoriales.com, which
+[Argo CD for Beginners](https://devoriales.com/quiz/26/argo-cd-for-beginners-foundations-first-deployments) course on devoriales.com, which
 goes deeper on each idea here and continues into Kustomize, Helm, ApplicationSets, RBAC
 and multi-cluster.
 
