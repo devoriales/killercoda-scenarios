@@ -28,20 +28,19 @@ entire resource you submitted in an annotation called
 `kubectl.kubernetes.io/last-applied-configuration`. Kubernetes caps annotations at
 262144 bytes.
 
-Measure the object it was trying to store:
-
-`kubectl get crd applicationsets.argoproj.io -o json | wc -c`{{exec}}
-
-Around **374000** bytes, against a 262144 byte ceiling. It cannot fit. Nothing is wrong
-with the manifest, your cluster, or your network.
-
 Confirm the damage is real and not cosmetic:
 
 `kubectl get crd | grep argoproj`{{exec}}
 
-You have `applications` and `appprojects`, but `applicationsets` is missing or unusable.
-An Argo CD in this state runs happily and silently ignores every ApplicationSet you
-create.
+```
+applications.argoproj.io     2026-07-29T08:04:55Z
+appprojects.argoproj.io      2026-07-29T08:04:56Z
+```
+
+Two CRDs, not three. `applicationsets.argoproj.io` was **never created**, so there is
+nothing to inspect and nothing to repair. An Argo CD in this state runs happily and
+silently ignores every ApplicationSet you create, which is why this is worth catching
+now rather than in a month.
 
 ## Fix it with server-side apply
 
@@ -51,6 +50,20 @@ stash the original anywhere, so the annotation limit stops applying:
 `kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/v3.4.5/manifests/install.yaml`{{exec}}
 
 Now every line ends in `serverside-applied`, including the CRD that just failed.
+
+## See what would not fit
+
+The CRD exists now, so you can finally measure the thing client-side apply was trying to
+stuff into an annotation:
+
+`kubectl get crd applicationsets.argoproj.io -o json | wc -c`{{exec}}
+
+Around **374000** bytes, against a 262144 byte ceiling. It was never going to fit.
+Nothing was wrong with the manifest, your cluster, or your network.
+
+(This only works now. Run it before the server-side apply and you get
+`Error from server (NotFound)`, because the object the first apply failed to create does
+not exist.)
 
 `--force-conflicts` matters on this second run specifically: your first client-side apply
 already claimed ownership of some fields, so the two mechanisms now disagree about who
