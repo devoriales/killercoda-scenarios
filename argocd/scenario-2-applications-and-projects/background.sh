@@ -50,7 +50,7 @@ done
 while [ ! -f /tmp/kc-ready ]; do sleep 1; done
 
 echo ""
-echo "  Ready. Argo CD is running and the CLI is logged in."
+echo "  Ready. Argo CD is running and the CLI is ready to use."
 echo "  Read the introduction on the left, then click START."
 echo ""
 PROGRESS
@@ -93,13 +93,172 @@ done
 kubectl rollout status statefulset/argocd-application-controller -n argocd --timeout=120s >>"$LOG" 2>&1 || true
 
 # Core mode reads the namespace from the kubectl context, so point the context at
-# argocd and turn core mode on for every argocd invocation.
+# argocd. kubeconfig is read per command, so this applies to the shell the student
+# already has open.
 kubectl config set-context --current --namespace=argocd >>"$LOG" 2>&1 || true
-grep -q 'ARGOCD_OPTS' /root/.bashrc 2>/dev/null || echo "export ARGOCD_OPTS='--core'" >> /root/.bashrc
-export ARGOCD_OPTS='--core'
+# The CLI is wrapped rather than driven by ARGOCD_OPTS. The student's shell is
+# spawned before this script finishes, so anything appended to .bashrc here is
+# never sourced by the terminal they are actually typing into. A wrapper on PATH
+# works in every shell, including the one already open.
+mv /usr/local/bin/argocd /usr/local/bin/argocd-real 2>>"$LOG" || true
+cat > /usr/local/bin/argocd <<'WRAP'
+#!/bin/bash
+# Argo CD CLI in core mode: talks to the Kubernetes API directly, so there is no
+# argocd-server address to configure and no password to paste.
+exec /usr/local/bin/argocd-real --core "$@"
+WRAP
+chmod +x /usr/local/bin/argocd 2>>"$LOG" || true
 touch /tmp/kc-step4
 
 # Pre-pull the workload image so the student's first sync goes Healthy quickly.
 crictl pull docker.io/library/nginx:1.29-alpine >>"$LOG" 2>&1 || true
+
+# Write the manifests the steps reference. Killercoda's `assets` block did not
+# deliver them (the target directory simply did not exist), and background.sh is
+# the mechanism this repo already relies on for files the student must apply.
+mkdir -p /root/manifests/01-application
+cat > /root/manifests/01-application/demo-application.yaml <<'YAML_EOF'
+# The Application resource: one object that says WHERE the desired state lives and
+# WHERE it should end up. Everything else Argo CD does follows from these two answers.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: demo
+  # The Application itself lives in the argocd namespace, NOT in the namespace it
+  # deploys to. This trips people up constantly: `kubectl get application demo` in the
+  # demo namespace returns nothing.
+  namespace: argocd
+spec:
+  # Which AppProject governs this app. `default` allows everything, which is why the
+  # next lesson replaces it.
+  project: default
+
+  source:
+    repoURL: https://github.com/devoriales/argocd-beginner.git
+    targetRevision: main
+    # Path within the repo. Argo CD renders whatever it finds here: plain YAML in this
+    # case, but the same field points at a Kustomize or Helm directory later.
+    path: module-03-core-concepts/01-application-crd/manifests
+
+  destination:
+    # https://kubernetes.default.svc means "the cluster Argo CD itself runs in".
+    server: https://kubernetes.default.svc
+    namespace: demo
+
+  syncPolicy:
+    syncOptions:
+      # Argo CD will not create the target namespace unless you ask it to. Without this
+      # the first sync fails with "namespace not found", which looks like a permissions
+      # problem and is not.
+      - CreateNamespace=true
+YAML_EOF
+
+mkdir -p /root/manifests/02-appproject
+cat > /root/manifests/02-appproject/restricted-project.yaml <<'YAML_EOF'
+# An AppProject that constrains what its Applications may do.
+#
+# clusterResourceWhitelist: [] is the important line. An empty list means
+# "nothing cluster-scoped at all", not "no restriction", so an Application in
+# this project cannot create a ClusterRole, a CRD, or even a Namespace.
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: course
+  namespace: argocd
+spec:
+  description: Only this course's repo, only the demo namespace, no cluster-scoped resources.
+  sourceRepos:
+    - https://github.com/devoriales/argocd-beginner.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: demo
+  clusterResourceWhitelist: []
+  namespaceResourceWhitelist:
+    - group: apps
+      kind: Deployment
+    - group: ''
+      kind: Service
+YAML_EOF
+
+mkdir -p /root/manifests/02-appproject
+cat > /root/manifests/02-appproject/forbidden-app.yaml <<'YAML_EOF'
+# An Application that the `course` project will refuse.
+#
+# The repo below is a real, working Argo CD example repo. Nothing is wrong with
+# it. It is simply not in the project's sourceRepos list, which is the whole
+# point: the rejection is about the boundary, not about the manifests.
+#
+# kubectl apply will succeed. The refusal arrives later, as a condition on the
+# Application, which is why a pipeline that only checks the apply exit code
+# reports this as a successful deployment.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: forbidden
+  namespace: argocd
+spec:
+  project: course
+  source:
+    repoURL: https://github.com/argoproj/argocd-example-apps.git
+    targetRevision: HEAD
+    path: guestbook
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: demo
+YAML_EOF
+
+mkdir -p /root/manifests/03-health
+cat > /root/manifests/03-health/broken-application.yaml <<'YAML_EOF'
+# Deploys a manifest that is valid but cannot run, to show that Sync status and Health
+# status are independent. Sync answers "does the cluster match Git?". Health answers
+# "is the thing actually working?".
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: broken
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/devoriales/argocd-beginner.git
+    targetRevision: main
+    path: module-03-core-concepts/04-sync-vs-health/manifests
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: demo
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+YAML_EOF
+
+mkdir -p /root/manifests/04-app-of-apps
+cat > /root/manifests/04-app-of-apps/root-application.yaml <<'YAML_EOF'
+# The app-of-apps pattern: an Application whose source directory contains other
+# Application manifests. Argo CD manages Argo CD.
+#
+# Bootstrapping a cluster becomes applying this one file. Everything else is
+# discovered from Git, which means adding a workload later is a pull request rather
+# than a kubectl command.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/devoriales/argocd-beginner.git
+    targetRevision: main
+    # This directory holds Application manifests, not workloads.
+    path: module-03-core-concepts/05-app-of-apps/apps
+  destination:
+    server: https://kubernetes.default.svc
+    # The children are Argo CD objects, so they land in the argocd namespace.
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+YAML_EOF
 
 touch /tmp/kc-ready

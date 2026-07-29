@@ -105,14 +105,156 @@ done
 kubectl rollout status statefulset/argocd-application-controller -n argocd --timeout=120s >>"$LOG" 2>&1 || true
 
 # Core mode reads the namespace from the kubectl context, so point the context at
-# argocd and turn core mode on for every argocd invocation.
+# argocd. kubeconfig is read per command, so this applies to the shell the student
+# already has open.
 kubectl config set-context --current --namespace=argocd >>"$LOG" 2>&1 || true
-grep -q 'ARGOCD_OPTS' /root/.bashrc 2>/dev/null || echo "export ARGOCD_OPTS='--core'" >> /root/.bashrc
-export ARGOCD_OPTS='--core'
+# The CLI is wrapped rather than driven by ARGOCD_OPTS. The student's shell is
+# spawned before this script finishes, so anything appended to .bashrc here is
+# never sourced by the terminal they are actually typing into. A wrapper on PATH
+# works in every shell, including the one already open.
+mv /usr/local/bin/argocd /usr/local/bin/argocd-real 2>>"$LOG" || true
+cat > /usr/local/bin/argocd <<'WRAP'
+#!/bin/bash
+# Argo CD CLI in core mode: talks to the Kubernetes API directly, so there is no
+# argocd-server address to configure and no password to paste.
+exec /usr/local/bin/argocd-real --core "$@"
+WRAP
+chmod +x /usr/local/bin/argocd 2>>"$LOG" || true
 touch /tmp/kc-step4
 
 # Pre-pull the workload image so each of the four syncs goes Healthy quickly. Every
 # deployment style in this scenario renders down to the same nginx image.
 crictl pull docker.io/library/nginx:1.29-alpine >>"$LOG" 2>&1 || true
+
+# Write the manifests the steps reference. Killercoda's `assets` block did not
+# deliver them (the target directory simply did not exist), and background.sh is
+# the mechanism this repo already relies on for files the student must apply.
+mkdir -p /root/manifests/01-plain
+cat > /root/manifests/01-plain/plain-application.yaml <<'YAML_EOF'
+# A plain-YAML Application. No Kustomize, no Helm, no configuration telling Argo CD
+# which is which: it reads the directory and applies what it finds.
+#
+# The directory, not a file list, is the unit. Adding a manifest to that folder in
+# Git is enough to have it deployed on the next sync.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: plain
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/devoriales/argocd-beginner.git
+    targetRevision: main
+    path: module-03-core-concepts/01-application-crd/manifests
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: demo
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+YAML_EOF
+
+mkdir -p /root/manifests/02-kustomize
+cat > /root/manifests/02-kustomize/kustom-dev-application.yaml <<'YAML_EOF'
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kustom-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/devoriales/argocd-beginner.git
+    targetRevision: main
+    path: module-04-deploying-applications/02-kustomize/overlays/dev
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: demo
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+YAML_EOF
+
+mkdir -p /root/manifests/02-kustomize
+cat > /root/manifests/02-kustomize/kustom-prod-application.yaml <<'YAML_EOF'
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kustom-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/devoriales/argocd-beginner.git
+    targetRevision: main
+    path: module-04-deploying-applications/02-kustomize/overlays/prod
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: demo
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+YAML_EOF
+
+mkdir -p /root/manifests/03-helm
+cat > /root/manifests/03-helm/helm-demo-application.yaml <<'YAML_EOF'
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: helm-demo
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/devoriales/argocd-beginner.git
+    targetRevision: main
+    path: module-04-deploying-applications/03-helm/demo-chart
+    helm:
+      # Argo CD does not run 'helm install'. It runs 'helm template' in the repo-server
+      # and applies the output, so there is no Helm release and 'helm list' shows nothing.
+      valuesObject:
+        replicaCount: 2
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: demo
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+YAML_EOF
+
+mkdir -p /root/manifests/04-autosync
+cat > /root/manifests/04-autosync/autosync-application.yaml <<'YAML_EOF'
+# Everything up to now needed an explicit sync. This one does not, and it also puts back
+# anything you change by hand.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: autosync
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/devoriales/argocd-beginner.git
+    targetRevision: main
+    # Its own manifests. Two Applications must never manage the same resources:
+    # the second one takes ownership and the first goes OutOfSync against resources
+    # it no longer controls, with nothing in the UI naming the cause.
+    path: module-04-deploying-applications/05-sync-policies/manifests
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: demo
+  syncPolicy:
+    automated:
+      # Apply changes from Git without being asked.
+      prune: true
+      # Revert changes made directly in the cluster. This is the setting that turns
+      # "Argo CD noticed drift" into "Argo CD corrected drift".
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+YAML_EOF
 
 touch /tmp/kc-ready
