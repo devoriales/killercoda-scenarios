@@ -1,8 +1,19 @@
 {
   "items": [
-    { "path": "gateway-api" },
-    { "path": "goldilocks" },
-    { "path": "ansible" },
-    { "path": "linux" }
+    {
+      "path": "gateway-api"
+    },
+    {
+      "path": "goldilocks"
+    },
+    {
+      "path": "ansible"
+    },
+    {
+      "path": "linux"
+    },
+    {
+      "path": "argocd"
+    }
   ]
 }

@@ -1,0 +1,46 @@
+{
+  "title": "Argo CD 1/1 — Install It, and Understand Why the Obvious Way Fails",
+  "description": "Install Argo CD 3.4.5 on a real cluster. Hit the install failure that most guides skip past, fix it properly, prove the install is actually healthy, reach the API, and rotate the admin password.",
+  "difficulty": "Beginner",
+  "time": "25",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "background.sh",
+      "foreground": "foreground.sh"
+    },
+    "steps": [
+      {
+        "title": "Install Argo CD (and watch it half-fail)",
+        "text": "step1/text.md",
+        "verify": "step1/verify.sh"
+      },
+      {
+        "title": "Prove the install is actually healthy",
+        "text": "step2/text.md",
+        "verify": "step2/verify.sh"
+      },
+      {
+        "title": "Reach the API server",
+        "text": "step3/text.md",
+        "verify": "step3/verify.sh"
+      },
+      {
+        "title": "Log in and rotate the admin password",
+        "text": "step4/text.md",
+        "verify": "step4/verify.sh"
+      }
+    ],
+    "finish": {
+      "text": "finish.md"
+    },
+    "assets": {
+      "host01": [
+        {"file": "manifests/**/*.*", "target": "/root/manifests"}
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node"
+  }
+}

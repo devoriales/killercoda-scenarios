@@ -1,0 +1,7 @@
+{
+  "title": "Argo CD for Beginners",
+  "description": "Hands-on Argo CD: install it on a real cluster, understand why the usual install half-fails, and secure the admin account.",
+  "items": [
+    { "path": "scenario-1-install-and-access" }
+  ]
+}
