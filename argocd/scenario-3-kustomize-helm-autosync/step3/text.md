@@ -65,7 +65,7 @@ something later in that list.
 
 ## The version that renders your chart
 
-`kubectl exec -n argocd deploy/argocd-repo-server -- helm version --short`{{exec}}
+`kubectl exec -n argocd deploy/argocd-repo-server -c argocd-repo-server -- helm version --short`{{exec}}
 
 ```
 v3.19.4+g7cfb6e4

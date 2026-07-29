@@ -57,7 +57,7 @@ editing `base/deployment.yaml` once, and both environments pick it up on their n
 That is the rendered output, before anything touches the cluster. It renders through the
 **repo-server**, using the Kustomize binary inside that pod:
 
-`kubectl exec -n argocd deploy/argocd-repo-server -- kustomize version`{{exec}}
+`kubectl exec -n argocd deploy/argocd-repo-server -c argocd-repo-server -- kustomize version`{{exec}}
 
 ```
 v5.8.1

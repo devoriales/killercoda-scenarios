@@ -71,15 +71,18 @@ curl -sSL -o /usr/local/bin/argocd \
 chmod +x /usr/local/bin/argocd 2>>"$LOG" || true
 
 # helm is needed for exactly one command in step 3: `helm list -n demo`, which
-# returns nothing and is the whole point. Pinned to the version baked into the
-# 3.4.5 repo-server image so the student's binary matches the one that renders.
-if ! command -v helm >/dev/null 2>&1; then
-  curl -sSL "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz" \
-    -o /tmp/helm.tgz >>"$LOG" 2>&1 || true
-  tar -xzf /tmp/helm.tgz -C /tmp >>"$LOG" 2>&1 || true
-  install -m 0755 /tmp/linux-amd64/helm /usr/local/bin/helm >>"$LOG" 2>&1 || true
-  rm -rf /tmp/helm.tgz /tmp/linux-amd64 >>"$LOG" 2>&1 || true
-fi
+# returns nothing and is the whole point.
+#
+# Installed unconditionally, not behind `command -v helm`. The backend image
+# already ships a helm (v4.1.1 when this was written), so guarding on presence
+# silently left the student on a different major version from the 3.19.4 baked
+# into the 3.4.5 repo-server. The course pins both ends deliberately, so pin
+# this one too rather than inheriting whatever the image happens to carry.
+curl -sSL "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz" \
+  -o /tmp/helm.tgz >>"$LOG" 2>&1 || true
+tar -xzf /tmp/helm.tgz -C /tmp >>"$LOG" 2>&1 || true
+install -m 0755 /tmp/linux-amd64/helm /usr/local/bin/helm >>"$LOG" 2>&1 || true
+rm -rf /tmp/helm.tgz /tmp/linux-amd64 >>"$LOG" 2>&1 || true
 touch /tmp/kc-step2
 
 # ── Phase 3: install Argo CD ──────────────────────────────────────────────────
