@@ -1,0 +1,33 @@
+# The Application resource: one object that says WHERE the desired state lives and
+# WHERE it should end up. Everything else Argo CD does follows from these two answers.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: demo
+  # The Application itself lives in the argocd namespace, NOT in the namespace it
+  # deploys to. This trips people up constantly: `kubectl get application demo` in the
+  # demo namespace returns nothing.
+  namespace: argocd
+spec:
+  # Which AppProject governs this app. `default` allows everything, which is why the
+  # next lesson replaces it.
+  project: default
+
+  source:
+    repoURL: https://github.com/devoriales/argocd-beginner.git
+    targetRevision: main
+    # Path within the repo. Argo CD renders whatever it finds here: plain YAML in this
+    # case, but the same field points at a Kustomize or Helm directory later.
+    path: module-03-core-concepts/01-application-crd/manifests
+
+  destination:
+    # https://kubernetes.default.svc means "the cluster Argo CD itself runs in".
+    server: https://kubernetes.default.svc
+    namespace: demo
+
+  syncPolicy:
+    syncOptions:
+      # Argo CD will not create the target namespace unless you ask it to. Without this
+      # the first sync fails with "namespace not found", which looks like a permissions
+      # problem and is not.
+      - CreateNamespace=true

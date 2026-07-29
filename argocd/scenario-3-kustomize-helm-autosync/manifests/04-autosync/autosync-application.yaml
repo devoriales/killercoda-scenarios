@@ -1,0 +1,28 @@
+# Everything up to now needed an explicit sync. This one does not, and it also puts back
+# anything you change by hand.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: autosync
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/devoriales/argocd-beginner.git
+    targetRevision: main
+    # Its own manifests. Two Applications must never manage the same resources:
+    # the second one takes ownership and the first goes OutOfSync against resources
+    # it no longer controls, with nothing in the UI naming the cause.
+    path: module-04-deploying-applications/05-sync-policies/manifests
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: demo
+  syncPolicy:
+    automated:
+      # Apply changes from Git without being asked.
+      prune: true
+      # Revert changes made directly in the cluster. This is the setting that turns
+      # "Argo CD noticed drift" into "Argo CD corrected drift".
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

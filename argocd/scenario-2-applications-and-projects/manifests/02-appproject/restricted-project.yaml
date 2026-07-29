@@ -1,0 +1,23 @@
+# An AppProject that constrains what its Applications may do.
+#
+# clusterResourceWhitelist: [] is the important line. An empty list means
+# "nothing cluster-scoped at all", not "no restriction", so an Application in
+# this project cannot create a ClusterRole, a CRD, or even a Namespace.
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: course
+  namespace: argocd
+spec:
+  description: Only this course's repo, only the demo namespace, no cluster-scoped resources.
+  sourceRepos:
+    - https://github.com/devoriales/argocd-beginner.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: demo
+  clusterResourceWhitelist: []
+  namespaceResourceWhitelist:
+    - group: apps
+      kind: Deployment
+    - group: ''
+      kind: Service

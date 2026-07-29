@@ -1,0 +1,26 @@
+# The app-of-apps pattern: an Application whose source directory contains other
+# Application manifests. Argo CD manages Argo CD.
+#
+# Bootstrapping a cluster becomes applying this one file. Everything else is
+# discovered from Git, which means adding a workload later is a pull request rather
+# than a kubectl command.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/devoriales/argocd-beginner.git
+    targetRevision: main
+    # This directory holds Application manifests, not workloads.
+    path: module-03-core-concepts/05-app-of-apps/apps
+  destination:
+    server: https://kubernetes.default.svc
+    # The children are Argo CD objects, so they land in the argocd namespace.
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

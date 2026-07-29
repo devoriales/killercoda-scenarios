@@ -1,0 +1,23 @@
+# An Application that the `course` project will refuse.
+#
+# The repo below is a real, working Argo CD example repo. Nothing is wrong with
+# it. It is simply not in the project's sourceRepos list, which is the whole
+# point: the rejection is about the boundary, not about the manifests.
+#
+# kubectl apply will succeed. The refusal arrives later, as a condition on the
+# Application, which is why a pipeline that only checks the apply exit code
+# reports this as a successful deployment.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: forbidden
+  namespace: argocd
+spec:
+  project: course
+  source:
+    repoURL: https://github.com/argoproj/argocd-example-apps.git
+    targetRevision: HEAD
+    path: guestbook
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: demo

@@ -1,6 +1,6 @@
 {
-  "title": "Argo CD 1/3 \u2014 Install It, and Understand Why the Obvious Way Fails",
-  "description": "Install Argo CD 3.4.5 on a real cluster. Hit the install failure that most guides skip past, fix it properly, prove the install is actually healthy, reach the API, and rotate the admin password.",
+  "title": "Argo CD 2/3 — Applications, Projects, and the Two Statuses That Matter",
+  "description": "Create an Argo CD Application and sync it, lock it down with an AppProject and watch a rejection, produce an app that is Synced and broken at the same time, and build an app-of-apps that creates other Applications for you.",
   "difficulty": "Beginner",
   "time": "25",
   "details": {
@@ -11,22 +11,22 @@
     },
     "steps": [
       {
-        "title": "Install Argo CD (and watch it half-fail)",
+        "title": "Create and sync your first Application",
         "text": "step1/text.md",
         "verify": "step1/verify.sh"
       },
       {
-        "title": "Prove the install is actually healthy",
+        "title": "Constrain it with an AppProject",
         "text": "step2/text.md",
         "verify": "step2/verify.sh"
       },
       {
-        "title": "Reach the API server",
+        "title": "Synced and broken at the same time",
         "text": "step3/text.md",
         "verify": "step3/verify.sh"
       },
       {
-        "title": "Log in and rotate the admin password",
+        "title": "App-of-apps: Argo CD managing Argo CD",
         "text": "step4/text.md",
         "verify": "step4/verify.sh"
       }
@@ -36,10 +36,7 @@
     },
     "assets": {
       "host01": [
-        {
-          "file": "manifests/**/*.*",
-          "target": "/root/manifests"
-        }
+        {"file": "manifests/**/*.*", "target": "/root/manifests"}
       ]
     }
   },
