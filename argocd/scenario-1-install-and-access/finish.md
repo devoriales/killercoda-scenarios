@@ -32,16 +32,17 @@ and why an app can be `Synced` and still broken.
 
 ### Continue with the course
 
-This lab is **Module 2** of
+This lab is the hands-on half of **Module 2** of
 **[Argo CD for Beginners: Foundations and First Deployments](https://devoriales.com/quiz/26/argo-cd-for-beginners-foundations-first-deployments)**
-on devoriales.com. It is free, and it covers:
+on devoriales.com. It is free. What is published today:
 
-| Module | What it covers |
-| --- | --- |
-| 1 | GitOps and Argo CD foundations: drift, push versus pull, architecture |
-| 2 | Installation and first setup, including everything in this lab |
-| 3 | Core concepts: the `Application` resource, `AppProject`, sync versus health |
-| 4 | Deploying with plain YAML, Kustomize, Helm, and OCI charts |
+| Module | Lessons | What it covers |
+| --- | --- | --- |
+| 1 | 5 | GitOps and Argo CD foundations: drift, push versus pull, Argo CD versus Flux, architecture |
+| 2 | 6 | Installation and first setup, including everything in this lab plus Argo CD Core and the CLI |
+
+Further modules on the `Application` resource and on deploying with Kustomize, Helm and
+OCI charts are being written and are not published yet.
 
 The course runs on a local k3d cluster rather than a browser VM, which is the setup you
 keep for the later modules. Every command in it was executed before it was published.

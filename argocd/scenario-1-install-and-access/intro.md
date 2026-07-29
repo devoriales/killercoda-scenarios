@@ -1,13 +1,13 @@
 # Install Argo CD properly
 
-> **Part of a full course.** This lab is the hands-on half of **Module 2** of
+> **Part of a course.** This lab is the hands-on half of **Module 2** of
 > [Argo CD for Beginners: Foundations and First Deployments](https://devoriales.com/quiz/26/argo-cd-for-beginners-foundations-first-deployments)
-> on [devoriales.com](https://devoriales.com), a free course covering GitOps
-> foundations, installation, the `Application` resource, and deploying with plain YAML,
-> Kustomize and Helm.
+> on [devoriales.com](https://devoriales.com), a free course. Module 1 covers GitOps
+> foundations and Argo CD's architecture; Module 2 covers installation and first setup,
+> which is what you are about to do.
 >
 > You can complete this lab on its own and it will make sense. The course adds the *why*
-> around it, and a local k3d setup you keep for the rest of the modules.
+> around it, and a local k3d setup you keep for the later modules.
 
 Almost every Argo CD guide gives you the same two lines:
 
