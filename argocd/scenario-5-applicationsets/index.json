@@ -1,0 +1,21 @@
+{
+  "title": "Argo CD 5: ApplicationSets and Progressive Syncs",
+  "description": "Generate Applications instead of writing them. Produce three from one object, discover them from repository folders and from your cluster registry, build a cross product with a matrix generator, then turn on progressive syncs and watch a rollout wait for each environment in turn.",
+  "difficulty": "Beginner",
+  "time": "25",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "background.sh",
+      "foreground": "foreground.sh"
+    },
+    "steps": [
+      { "title": "One object, three Applications", "text": "step1/text.md", "verify": "step1/verify.sh" },
+      { "title": "Discovering the list instead of maintaining it", "text": "step2/text.md", "verify": "step2/verify.sh" },
+      { "title": "Matrix, and the arithmetic to do first", "text": "step3/text.md", "verify": "step3/verify.sh" },
+      { "title": "Progressive syncs, and the flag nobody mentions", "text": "step4/text.md", "verify": "step4/verify.sh" }
+    ],
+    "finish": { "text": "finish.md" }
+  },
+  "backend": { "imageid": "kubernetes-kubeadm-1node" }
+}

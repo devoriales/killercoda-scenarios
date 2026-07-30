@@ -26,7 +26,7 @@ Beyond the migration example, the cases you will actually meet:
 
 ## Where to go next
 
-**[Argo CD 5: ApplicationSets](https://killercoda.com/devoriales/course/argocd/scenario-5-applicationsets)**
+**[Argo CD 5: ApplicationSets and Progressive Syncs](https://killercoda.com/devoriales/course/argocd/scenario-5-applicationsets)**
 generates Applications from a list, a Git repository or a cluster registry, and rolls changes
 out environment by environment.
 

@@ -1,6 +1,6 @@
 {
   "title": "Argo CD for Beginners",
-  "description": "Hands-on Argo CD: install it on a real cluster, build Applications and AppProjects, deploy with Kustomize and Helm, and control ordering with sync waves, hooks and sync windows.",
+  "description": "Hands-on Argo CD: install it, build Applications and AppProjects, deploy with Kustomize and Helm, control ordering with sync waves and hooks, and generate Applications at scale with ApplicationSets.",
   "items": [
     {
       "path": "scenario-1-install-and-access"
@@ -13,6 +13,9 @@
     },
     {
       "path": "scenario-4-sync-waves-and-hooks"
+    },
+    {
+      "path": "scenario-5-applicationsets"
     }
   ]
 }
