@@ -1,6 +1,16 @@
 #!/bin/bash
 set -e
 
+# The controller is installed off the critical path during setup, so it may still be
+# starting if the student reached this step quickly.
+READY=$(kubectl get deploy argo-rollouts -n argo-rollouts -o jsonpath='{.status.readyReplicas}' 2>/dev/null)
+if [ "${READY:-0}" -lt 1 ]; then
+  echo "The Argo Rollouts controller is not running yet, so no Rollout will progress."
+  echo "Wait for it with:"
+  echo "  kubectl rollout status deploy/argo-rollouts -n argo-rollouts --timeout=300s"
+  exit 1
+fi
+
 if ! kubectl get application canary-web -n argocd >/dev/null 2>&1; then
   echo "The canary-web Application does not exist."
   echo "Create it with: kubectl apply -f /root/manifests/04-canary/canary-application.yaml"

@@ -27,7 +27,7 @@ steps=(
   "Installing the argocd CLI"
   "Installing Argo CD 3.4.5"
   "Waiting for Argo CD to be ready"
-  "Installing Argo Rollouts 1.9.1"
+  "Registering Argo Rollouts 1.9.1"
 )
 signals=(
   "/tmp/kc-step1"
@@ -38,7 +38,7 @@ signals=(
 )
 
 echo ""
-echo "  Setting up Argo CD and Argo Rollouts. This takes three to four minutes."
+echo "  Setting up Argo CD and Argo Rollouts. This takes four to six minutes."
 echo "  This one is about seeing what broke, and what runs on top of a sync."
 echo ""
 
@@ -122,12 +122,13 @@ kubectl create namespace argo-rollouts >>"$LOG" 2>&1 || true
 kubectl apply -n argo-rollouts --server-side --force-conflicts \
   -f "https://github.com/argoproj/argo-rollouts/releases/download/${ROLLOUTS_VERSION}/install.yaml" \
   >>"$LOG" 2>&1 || true
-for _ in $(seq 1 40); do
-  if kubectl rollout status deploy/argo-rollouts -n argo-rollouts --timeout=30s >>"$LOG" 2>&1; then
-    break
-  fi
-  sleep 5
-done
+
+# Deliberately NOT waiting for the argo-rollouts Deployment to become Available.
+# Measured on a real Killercoda VM, that wait pushed total setup from about five
+# minutes to about thirteen, because it serialises the Rollouts image pull after
+# Argo CD's. Steps 1 to 3 do not touch Rollouts at all, so the controller finishes
+# coming up while the student works through them, and step 4 waits for it itself.
+# What matters here is that the CRDs are registered, which the apply above does.
 
 # The kubectl plugin, so `kubectl argo rollouts promote` works as written.
 curl -sSL -o /usr/local/bin/kubectl-argo-rollouts \

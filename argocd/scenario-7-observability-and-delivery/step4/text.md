@@ -5,8 +5,17 @@ one failure, a pod that will not start, and that is not the failure that hurts. 
 perfectly, pass its readiness probe, and return 500 on every request. Kubernetes finishes the
 update, Argo CD reports success, and the outage is total.
 
-Argo Rollouts is already installed here. It replaces your `Deployment` with a `Rollout`, and the
-spec is deliberately almost identical:
+Argo Rollouts was installed while you worked through the first three steps. Make sure its
+controller has finished starting before you rely on it, because a `Rollout` object applied
+before the controller is running simply sits there doing nothing:
+
+`kubectl rollout status deploy/argo-rollouts -n argo-rollouts --timeout=300s`{{exec}}
+
+```
+deployment "argo-rollouts" successfully rolled out
+```
+
+It replaces your `Deployment` with a `Rollout`, and the spec is deliberately almost identical:
 
 ```yaml
 kind: Rollout          # was: Deployment
