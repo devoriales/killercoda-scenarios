@@ -52,8 +52,11 @@ This is the difference that matters. Look at how Argo CD lists them:
 
 ```
 {'kind': 'Deployment', 'name': 'hooks-app', 'status': 'Synced'}
+{'hook': True, 'kind': 'Job', 'name': 'hooks-postsync', 'requiresPruning': True}
 {'hook': True, 'kind': 'Job', 'name': 'hooks-presync', 'requiresPruning': True}
 ```
+
+Three entries: the Deployment and **both** hooks.
 
 The Deployment carries a **sync status**, because it is desired state Argo CD must maintain.
 The hook carries `hook: true`, `requiresPruning: true`, and **no sync status at all**.

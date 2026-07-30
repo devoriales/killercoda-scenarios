@@ -41,10 +41,11 @@ Look at the duration in the output:
 
 ```
 Phase:              Succeeded
-Duration:           23s
+Duration:           28s
 ```
 
-**Twenty three seconds for three tiny resources.** Without waves all three would be applied
+**Nearly half a minute for three tiny resources**, and the exact number varies by a few
+seconds between runs. Without waves all three would be applied
 in about a second, and the app would come up alongside a migration that had not run.
 
 ## Prove it, rather than trusting the duration
