@@ -1,0 +1,22 @@
+{
+  "title": "Argo CD 7: Observability, Canaries, and a Platform That Builds Itself",
+  "description": "Diagnose the drift that never resolves, find which component's log actually names a failure, read the metrics worth alerting on, run a canary that pauses at 25 percent, then bootstrap a whole platform from a single file.",
+  "difficulty": "Beginner",
+  "time": "35",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "background.sh",
+      "foreground": "foreground.sh"
+    },
+    "steps": [
+      { "title": "The diff that looks like nothing", "text": "step1/text.md", "verify": "step1/verify.sh" },
+      { "title": "Which component's log names the cause", "text": "step2/text.md", "verify": "step2/verify.sh" },
+      { "title": "The metric worth being woken up for", "text": "step3/text.md", "verify": "step3/verify.sh" },
+      { "title": "A canary that stops and waits", "text": "step4/text.md", "verify": "step4/verify.sh" },
+      { "title": "Bootstrapping the whole platform from one file", "text": "step5/text.md", "verify": "step5/verify.sh" }
+    ],
+    "finish": { "text": "finish.md" }
+  },
+  "backend": { "imageid": "kubernetes-kubeadm-1node" }
+}

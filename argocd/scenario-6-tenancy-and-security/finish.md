@@ -44,6 +44,10 @@ You now have the boundaries. What is missing is knowing when any of it breaks: w
 shows drift nobody is correcting, which component's log actually names the cause of a failed
 render, and what to tune when there are thousands of Applications rather than five.
 
+**[Argo CD 7: Observability, Canaries, and a Platform That Builds Itself](https://killercoda.com/devoriales/course/argocd/scenario-7-observability-and-delivery)**
+does exactly that, then adds the two layers above a plain sync: a canary that pauses at 25
+percent, and one file that creates an entire platform.
+
 ### Continue with the course
 
 This lab is the hands-on half of **Modules 7 and 8** of

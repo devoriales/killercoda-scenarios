@@ -1,6 +1,6 @@
 {
   "title": "Argo CD for Beginners",
-  "description": "Hands-on Argo CD: install it, build Applications and AppProjects, deploy with Kustomize and Helm, control ordering with sync waves and hooks, generate Applications at scale with ApplicationSets, then lock it down with projects, RBAC, sealed secrets and signed commits.",
+  "description": "Hands-on Argo CD: install it, build Applications and AppProjects, deploy with Kustomize and Helm, control ordering with sync waves and hooks, generate Applications at scale with ApplicationSets, lock it down with projects, RBAC, sealed secrets and signed commits, then diagnose failures, run canaries and bootstrap a platform from a single file.",
   "items": [
     {
       "path": "scenario-1-install-and-access"
@@ -19,6 +19,9 @@
     },
     {
       "path": "scenario-6-tenancy-and-security"
+    },
+    {
+      "path": "scenario-7-observability-and-delivery"
     }
   ]
 }
