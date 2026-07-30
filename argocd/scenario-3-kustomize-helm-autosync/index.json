@@ -1,5 +1,5 @@
 {
-  "title": "Argo CD 3/3 — Kustomize, Helm, and Deployments That Fix Themselves",
+  "title": "Argo CD 3: Kustomize, Helm, and Deployments That Fix Themselves",
   "description": "Deploy the same repository four ways: plain YAML, a Kustomize base with two overlays, and a Helm chart with no Helm release. Then turn on self-heal and watch Argo CD revert a manual kubectl scale within seconds.",
   "difficulty": "Beginner",
   "time": "25",

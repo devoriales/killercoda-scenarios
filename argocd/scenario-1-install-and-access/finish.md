@@ -28,28 +28,27 @@ usually goes unnoticed.
 
 You have Argo CD running but nothing deployed through it. That is the next scenario:
 
-**[Argo CD 2/3: Applications, Projects, and the Two Statuses That Matter](https://killercoda.com/devoriales/course/argocd/scenario-2-applications-and-projects)**
+**[Argo CD 2: Applications, Projects, and the Two Statuses That Matter](https://killercoda.com/devoriales/course/argocd/scenario-2-applications-and-projects)**
 covers the `Application` resource, locking one down with an `AppProject`, and why an app can
 be `Synced` and broken at the same time.
 
-**[Argo CD 3/3: Kustomize, Helm, and Deployments That Fix Themselves](https://killercoda.com/devoriales/course/argocd/scenario-3-kustomize-helm-autosync)**
+**[Argo CD 3: Kustomize, Helm, and Deployments That Fix Themselves](https://killercoda.com/devoriales/course/argocd/scenario-3-kustomize-helm-autosync)**
 deploys the same repository four different ways, then turns on self-heal.
 
 ### Continue with the course
 
 This lab is the hands-on half of **Module 2** of
-**[Argo CD for Beginners: Foundations and First Deployments](https://devoriales.com/quiz/26/argo-cd-for-beginners-foundations-first-deployments)**
-on devoriales.com. It is free. What is published today:
+**[Argo CD for Beginners: From First Sync to Production GitOps](https://devoriales.com/quiz/26/argo-cd-for-beginners-from-first-sync-to-production-gitops)**
+on devoriales.com. It is free, and complete: twelve modules and sixty lessons, from what
+GitOps is through to a multi-tenant platform that bootstraps itself from a single file.
 
-| Module | Lessons | What it covers |
-| --- | --- | --- |
-| 1 | 5 | GitOps and Argo CD foundations: drift, push versus pull, Argo CD versus Flux, architecture |
-| 2 | 6 | Installation and first setup, including everything in this lab plus Argo CD Core and the CLI |
-| 3 | 5 | The `Application` and `AppProject` resources, repositories, sync versus health, app-of-apps |
-| 4 | 5 | Deploying with plain YAML, Kustomize, Helm and OCI charts, plus sync policies |
-
-Further modules on sync waves, ApplicationSets, RBAC and secrets are being written and are
-not published yet.
+| Modules | What they cover |
+| --- | --- |
+| 1 to 2 | GitOps foundations, then installing Argo CD on a pinned local cluster |
+| 3 to 4 | Applications and AppProjects, then deploying with plain YAML, Kustomize, Helm and OCI charts |
+| 5 to 6 | Sync waves, hooks and windows, then ApplicationSets and progressive syncs |
+| 7 to 8 | Multi-cluster, RBAC and SSO, then secrets, signed commits and supply chain |
+| 9 to 12 | The Source Hydrator, observability, progressive delivery, and a capstone platform |
 
 The course runs on a local k3d cluster rather than a browser VM, which is the setup you
 keep for the later modules. Every command in it was executed before it was published.

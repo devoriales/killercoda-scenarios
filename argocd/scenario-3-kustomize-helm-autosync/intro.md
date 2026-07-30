@@ -41,7 +41,7 @@ Manifests are in `/root/manifests/`, and everything is deployed from the public 
 ## Part of a course
 
 This scenario covers Module 4 of the free
-[Argo CD for Beginners](https://devoriales.com/quiz/26/argo-cd-for-beginners-foundations-first-deployments) course on devoriales.com, which
+[Argo CD for Beginners](https://devoriales.com/quiz/26/argo-cd-for-beginners-from-first-sync-to-production-gitops) course on devoriales.com, which
 continues into sync waves, ApplicationSets, RBAC, secrets and multi-cluster.
 
 Let's deploy the same application four different ways.

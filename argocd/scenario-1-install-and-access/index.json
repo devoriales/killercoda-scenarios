@@ -1,5 +1,5 @@
 {
-  "title": "Argo CD 1/3 \u2014 Install It, and Understand Why the Obvious Way Fails",
+  "title": "Argo CD 1: Install It, and Understand Why the Obvious Way Fails",
   "description": "Install Argo CD 3.4.5 on a real cluster. Hit the install failure that most guides skip past, fix it properly, prove the install is actually healthy, reach the API, and rotate the admin password.",
   "difficulty": "Beginner",
   "time": "25",

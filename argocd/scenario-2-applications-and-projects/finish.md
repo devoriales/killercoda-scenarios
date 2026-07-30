@@ -22,7 +22,7 @@
 
 ## Where to go next
 
-**[Argo CD 3/3: Kustomize, Helm, and self-healing deployments](https://killercoda.com/devoriales/course/argocd/scenario-3-kustomize-helm-autosync)**
+**[Argo CD 3: Kustomize, Helm, and self-healing deployments](https://killercoda.com/devoriales/course/argocd/scenario-3-kustomize-helm-autosync)**
 takes the same repo and deploys it four different ways, then turns on `selfHeal` and shows
 it reverting a manual change within seconds.
 
@@ -32,7 +32,7 @@ covers installing Argo CD, including the failure most guides skip past.
 ## The full course
 
 These scenarios are the hands-on labs from
-**[Argo CD for Beginners](https://devoriales.com/quiz/26/argo-cd-for-beginners-foundations-first-deployments)** on devoriales.com, a free
+**[Argo CD for Beginners](https://devoriales.com/quiz/26/argo-cd-for-beginners-from-first-sync-to-production-gitops)** on devoriales.com, a free
 course that goes from what GitOps is through to multi-cluster deployments. Everything in it
 is verified against a real cluster before it ships.
 

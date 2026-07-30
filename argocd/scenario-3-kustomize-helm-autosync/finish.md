@@ -25,6 +25,10 @@ which was which**. It reads the directory and decides.
 
 ## Where to go next
 
+**[Argo CD 4: Sync Waves, Hooks, and Sync Windows](https://killercoda.com/devoriales/course/argocd/scenario-4-sync-waves-and-hooks)**
+makes Argo CD wait: it gates a Deployment on a database migration, runs PreSync and PostSync
+hooks, and blocks a sync entirely with a sync window.
+
 If you have not done them:
 
 - **[Scenario 1](https://killercoda.com/devoriales/course/argocd/scenario-1-install-and-access)**: install Argo CD, including the failure most guides skip past
@@ -33,7 +37,7 @@ If you have not done them:
 ## The full course
 
 These scenarios are the hands-on labs from
-**[Argo CD for Beginners](https://devoriales.com/quiz/26/argo-cd-for-beginners-foundations-first-deployments)** on devoriales.com, a free
+**[Argo CD for Beginners](https://devoriales.com/quiz/26/argo-cd-for-beginners-from-first-sync-to-production-gitops)** on devoriales.com, a free
 course that goes from what GitOps is through to multi-cluster deployments. Every command and
 output in it is verified against a real cluster before it ships.
 

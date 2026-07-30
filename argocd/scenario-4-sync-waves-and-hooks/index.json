@@ -1,6 +1,6 @@
 {
-  "title": "Argo CD 2: Applications, Projects, and the Two Statuses That Matter",
-  "description": "Create an Argo CD Application and sync it, lock it down with an AppProject and watch a rejection, produce an app that is Synced and broken at the same time, and build an app-of-apps that creates other Applications for you.",
+  "title": "Argo CD 4: Sync Waves, Hooks, and Sync Windows",
+  "description": "Make Argo CD wait: gate a Deployment on a database migration with sync waves and prove the ordering from timestamps, run PreSync and PostSync hooks, discover which hook deletion policy is the default by measuring it, and block a sync entirely with a sync window.",
   "difficulty": "Beginner",
   "time": "25",
   "details": {
@@ -11,22 +11,22 @@
     },
     "steps": [
       {
-        "title": "Create and sync your first Application",
+        "title": "Sync waves: making Argo CD wait",
         "text": "step1/text.md",
         "verify": "step1/verify.sh"
       },
       {
-        "title": "Constrain it with an AppProject",
+        "title": "Hooks: work that happens around a sync",
         "text": "step2/text.md",
         "verify": "step2/verify.sh"
       },
       {
-        "title": "Synced and broken at the same time",
+        "title": "Hook deletion policies",
         "text": "step3/text.md",
         "verify": "step3/verify.sh"
       },
       {
-        "title": "App-of-apps: Argo CD managing Argo CD",
+        "title": "Sync windows: when a sync is allowed at all",
         "text": "step4/text.md",
         "verify": "step4/verify.sh"
       }
