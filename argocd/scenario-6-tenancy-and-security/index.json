@@ -1,0 +1,22 @@
+{
+  "title": "Argo CD 6: Multi-Tenancy, RBAC, and Trusting What You Deploy",
+  "description": "Lock a tenant into one repository and one set of namespaces, write an RBAC policy and find the leak the default setting leaves open, let a tenant own Applications in their own namespace without touching argocd, then seal a secret for Git and require signed commits before anything deploys.",
+  "difficulty": "Beginner",
+  "time": "30",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "background.sh",
+      "foreground": "foreground.sh"
+    },
+    "steps": [
+      { "title": "An AppProject that refuses things", "text": "step1/text.md", "verify": "step1/verify.sh" },
+      { "title": "RBAC, and the leak in the default policy", "text": "step2/text.md", "verify": "step2/verify.sh" },
+      { "title": "Letting a tenant own their Applications", "text": "step3/text.md", "verify": "step3/verify.sh" },
+      { "title": "Committing a secret without committing the secret", "text": "step4/text.md", "verify": "step4/verify.sh" },
+      { "title": "Proving a commit was authorised", "text": "step5/text.md", "verify": "step5/verify.sh" }
+    ],
+    "finish": { "text": "finish.md" }
+  },
+  "backend": { "imageid": "kubernetes-kubeadm-1node" }
+}

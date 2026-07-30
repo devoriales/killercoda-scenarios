@@ -31,9 +31,10 @@ and adding prod is a reviewable one-line diff rather than a directory quietly ap
 
 ## Where to go next
 
-**[Argo CD 6: Multi-Cluster, RBAC, and Multi-Tenancy](https://killercoda.com/devoriales/course/argocd/scenario-6-multicluster-and-rbac)**
-registers a second cluster, builds RBAC that actually holds, and gives a tenant its own
-namespace without any access to `argocd`.
+**[Argo CD 6: Multi-Tenancy, RBAC, and Trusting What You Deploy](https://killercoda.com/devoriales/course/argocd/scenario-6-tenancy-and-security)**
+locks a tenant into one repository and one set of namespaces, finds the leak in the default
+RBAC policy, gives a tenant its own Applications without any access to `argocd`, then seals a
+secret for Git and requires signed commits before anything deploys.
 
 If you have not done them:
 
