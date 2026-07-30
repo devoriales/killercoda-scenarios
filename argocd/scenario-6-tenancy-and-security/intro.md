@@ -1,7 +1,7 @@
 # Boundaries: what may deploy, who may act, and whether to trust the commit
 
 Argo CD holds cluster-admin credentials. An Application is a request to use them, and
-everything in this scenario is about the four things standing between that request and your
+everything in this scenario is about the five things standing between that request and your
 cluster.
 
 Each one stops a different failure, and missing any one leaves a hole:
@@ -11,6 +11,7 @@ Each one stops a different failure, and missing any one leaves a hole:
 | `AppProject` restrictions | a tenant deploying into `kube-system`, or granting itself cluster-admin |
 | RBAC `policy.csv` | a tenant syncing another tenant's Application |
 | `sourceNamespaces` | a tenant needing write access to the `argocd` namespace |
+| Sealed Secrets | a credential reaching Git in readable form |
 | Signature verification | deploying a commit nobody authorised |
 
 The common mistake is writing a careful `AppProject` and leaving RBAC at defaults, which
