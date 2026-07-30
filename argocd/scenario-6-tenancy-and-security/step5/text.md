@@ -64,12 +64,22 @@ which keeps them in a ConfigMap:
 `kubectl get cm argocd-gpg-keys-cm -n argocd`{{exec}}
 
 ```
-Error from server (NotFound): configmaps "argocd-gpg-keys-cm" not found
+NAME                 DATA   AGE
+argocd-gpg-keys-cm   0      11m
 ```
 
-**A stock install has no trusted keys at all**, so on this cluster the requirement could never
-be satisfied by any commit. You import a public key with `argocd gpg add --from <file>`, and
-this scenario ships one to look at:
+The ConfigMap ships with the install, and `DATA 0` is the whole story: it exists and it is
+empty. The CLI agrees:
+
+`argocd gpg list`{{exec}}
+
+```
+KEYID  TYPE  IDENTITY
+```
+
+Headers and nothing else. **A stock install trusts no keys at all**, so on this cluster the
+requirement could never be satisfied by any commit, no matter who signed it. You import a
+public key with `argocd gpg add --from <file>`, and this scenario ships one to look at:
 
 `head -3 /root/manifests/04-security/trusted-key.asc`{{exec}}
 
@@ -77,9 +87,10 @@ Only the **public** half is here, and only the public half is ever needed: verif
 with the public key, and signing happens on a developer's machine or in CI with the private one.
 A lab that shipped a private key would be demonstrating the exact mistake this module is about.
 
-Note that `argocd gpg list` exits with a fatal error rather than an empty list when the
-ConfigMap is absent, which reads like a broken CLI and is really just "nothing imported yet".
-`kubectl get cm` above is the clearer check.
+Worth separating two failures that produce the same rejection. **A missing signature** is what
+you are seeing here. **A signature from a key that is not in this ConfigMap** fails too, and if
+you have not checked `argocd gpg list` it is easy to spend a while wondering why a commit you
+definitely signed is still refused.
 
 ## Proving the gate is what stopped it
 

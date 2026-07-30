@@ -81,7 +81,8 @@ secret/db-password   Opaque   1      6s
 ```
 
 **You applied one object and got two.** The controller watched the SealedSecret, decrypted it,
-and created a normal Kubernetes Secret from it. Confirm the value survived intact:
+and created a normal Kubernetes Secret from it. The two ages will not always match the block
+above; what matters is that a Secret exists at all, and you never created one. Confirm the value survived intact:
 
 `kubectl get secret db-password -n sealed-demo -o jsonpath='{.data.password}' | base64 -d; echo`{{exec}}
 
@@ -130,10 +131,10 @@ first start:
 
 ```
 NAME                      TYPE                DATA   AGE
-sealed-secrets-keyw9s9t   kubernetes.io/tls   2      21h
+sealed-secrets-keyw9s9t   kubernetes.io/tls   2      8m
 ```
 
-The random suffix and age will differ on your cluster. A SealedSecret sealed against this cluster **cannot** be decrypted by another one. That is the
+The random suffix and the age will both differ on your cluster. A SealedSecret sealed against this cluster **cannot** be decrypted by another one. That is the
 security property, and it is also the operational trap: rebuild the cluster without backing up
 that key and every SealedSecret in your repository becomes undecryptable ciphertext. The
 manifests still apply cleanly and no Secret is ever created.
