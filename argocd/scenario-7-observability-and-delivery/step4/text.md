@@ -58,14 +58,17 @@ the identical Rollout with a different tag. **The desired state still comes from
 
 Watch the two systems from one place:
 
-`for i in $(seq 1 7); do echo "app=$(kubectl get application canary-web -n argocd -o jsonpath='{.status.health.status}')  rollout=$(kubectl get rollout web -n canary-demo -o jsonpath='{.status.phase}|{.status.message}')"; sleep 8; done`{{exec}}
+`for i in $(seq 1 20); do APP=$(kubectl get application canary-web -n argocd -o jsonpath='{.status.health.status}'); RO=$(kubectl get rollout web -n canary-demo -o jsonpath='{.status.phase}|{.status.message}'); echo "app=$APP  rollout=$RO"; [ "${RO%%|*}" = "Paused" ] && break; sleep 8; done`{{exec}}
 
 ```
 app=Progressing  rollout=Progressing|more replicas need to be updated
-app=Suspended    rollout=Paused|CanaryPauseStep
-app=Suspended    rollout=Paused|CanaryPauseStep
+app=Progressing  rollout=Progressing|more replicas need to be updated
 app=Suspended    rollout=Paused|CanaryPauseStep
 ```
+
+The loop stops at the first `Paused`, so it costs you only as long as the roll actually takes.
+**How many `Progressing` lines you get depends entirely on how fast this VM pulls and starts a
+pod**, and on a slow one it can be most of them. What matters is where it lands.
 
 ## `Suspended`, and why it is the right answer
 
