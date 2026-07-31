@@ -116,6 +116,14 @@ because the object always matched.
 If you want promotion itself to be auditable, use automated analysis instead of manual pauses and
 let a metric decide. Then there is no human action to record.
 
+The canary has served its purpose, and the next step brings up a small platform of its own.
+Give the node its four replicas back:
+
+`kubectl delete application canary-web -n argocd && kubectl delete ns canary-demo --wait=false`{{exec}}
+
+Deleting the Application removes the Rollout with it, because Argo CD owns that object. This is
+the same ownership you saw in step 1, used deliberately this time.
+
 <details><summary>Who owns what, and the two ways this goes wrong</summary>
 
 **Argo CD owns the object. Argo Rollouts owns the progression. Neither owns the image tag**,

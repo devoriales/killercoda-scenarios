@@ -34,16 +34,27 @@ for NS in platform-dev platform-staging; do
   fi
 done
 
-UNHEALTHY=""
-for APP in platform-root platform-web-dev platform-web-staging; do
-  H=$(kubectl get application "$APP" -n argocd -o jsonpath='{.status.health.status}' 2>/dev/null)
-  [ "$H" = "Healthy" ] || UNHEALTHY="$UNHEALTHY $APP($H)"
-done
-if [ -n "$UNHEALTHY" ]; then
-  echo "Not everything is Healthy yet:$UNHEALTHY"
-  echo "Give the tree a reconciliation, then check again."
+# Root itself must be Healthy, because it is the thing that discovers everything else.
+ROOTH=$(kubectl get application platform-root -n argocd -o jsonpath='{.status.health.status}' 2>/dev/null)
+if [ "$ROOTH" != "Healthy" ]; then
+  echo "platform-root reports ${ROOTH:-unknown} rather than Healthy, so the tree is not established yet."
   exit 1
 fi
 
-echo "Bootstrapped from one file: the platform project, two Applications and two namespaces all exist and are Healthy, and root recreated a deleted child."
+# The children must be Synced, which proves root delivered them and the project accepted
+# them. Their health is deliberately NOT required: on a busy single node the pods can take
+# a while to start, and that is a property of the VM rather than of the bootstrap.
+NOTSYNCED=""
+for APP in platform-web-dev platform-web-staging; do
+  S=$(kubectl get application "$APP" -n argocd -o jsonpath='{.status.sync.status}' 2>/dev/null)
+  [ "$S" = "Synced" ] || NOTSYNCED="$NOTSYNCED $APP($S)"
+done
+if [ -n "$NOTSYNCED" ]; then
+  echo "These children are not Synced yet:$NOTSYNCED"
+  echo "Root creates them in wave 0, just after the project. Give it a reconciliation."
+  exit 1
+fi
+
+echo "Bootstrapped from one file: platform-root is Healthy, and it produced the platform project, two Applications and two namespaces."
+echo "If the child workloads are still Progressing, that is this VM starting pods, not the bootstrap."
 exit 0
