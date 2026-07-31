@@ -37,7 +37,7 @@ alarming.
 ## Part of a course
 
 This scenario covers Modules 10, 11 and 12 of the free
-[Argo CD for Beginners](https://devoriales.com/quiz/26/argo-cd-for-beginners-from-first-sync-to-production-gitops)
+[The Complete Argo CD Course](https://devoriales.com/quiz/26/the-complete-argo-cd-course-gitops-basics-to-production)
 course on devoriales.com.
 
 Let's break something and find out where it says so.

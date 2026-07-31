@@ -32,7 +32,7 @@ covers installing Argo CD, including the failure most guides skip past.
 ## The full course
 
 These scenarios are the hands-on labs from
-**[Argo CD for Beginners](https://devoriales.com/quiz/26/argo-cd-for-beginners-from-first-sync-to-production-gitops)** on devoriales.com, a free
+**[The Complete Argo CD Course](https://devoriales.com/quiz/26/the-complete-argo-cd-course-gitops-basics-to-production)** on devoriales.com, a free
 course that goes from what GitOps is through to multi-cluster deployments. Everything in it
 is verified against a real cluster before it ships.
 

@@ -39,7 +39,7 @@ If you have not done them:
 ## The full course
 
 These scenarios are the hands-on labs from
-**[Argo CD for Beginners: From First Sync to Production GitOps](https://devoriales.com/quiz/26/argo-cd-for-beginners-from-first-sync-to-production-gitops)**
+**[The Complete Argo CD Course: GitOps Basics to Production](https://devoriales.com/quiz/26/the-complete-argo-cd-course-gitops-basics-to-production)**
 on devoriales.com, a free twelve-module course that ends with a multi-tenant platform
 bootstrapping itself from a single file. Every command in it was executed against a real
 cluster before it was written down.

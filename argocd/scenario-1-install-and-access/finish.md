@@ -38,7 +38,7 @@ deploys the same repository four different ways, then turns on self-heal.
 ### Continue with the course
 
 This lab is the hands-on half of **Module 2** of
-**[Argo CD for Beginners: From First Sync to Production GitOps](https://devoriales.com/quiz/26/argo-cd-for-beginners-from-first-sync-to-production-gitops)**
+**[The Complete Argo CD Course: GitOps Basics to Production](https://devoriales.com/quiz/26/the-complete-argo-cd-course-gitops-basics-to-production)**
 on devoriales.com. It is free, and complete: twelve modules and sixty lessons, from what
 GitOps is through to a multi-tenant platform that bootstraps itself from a single file.
 

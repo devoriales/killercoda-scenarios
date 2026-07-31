@@ -39,7 +39,7 @@ is worth meeting once in a lab rather than in production.
 ## Part of a course
 
 This scenario covers Module 6 of the free
-[Argo CD for Beginners](https://devoriales.com/quiz/26/argo-cd-for-beginners-from-first-sync-to-production-gitops)
+[The Complete Argo CD Course](https://devoriales.com/quiz/26/the-complete-argo-cd-course-gitops-basics-to-production)
 course on devoriales.com, which continues into multi-cluster, RBAC, secrets and a capstone
 platform.
 

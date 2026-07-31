@@ -42,7 +42,7 @@ not pretend to perform one. Everything else here runs for real.
 ## Part of a course
 
 This scenario covers Modules 7 and 8 of the free
-[Argo CD for Beginners](https://devoriales.com/quiz/26/argo-cd-for-beginners-from-first-sync-to-production-gitops)
+[The Complete Argo CD Course](https://devoriales.com/quiz/26/the-complete-argo-cd-course-gitops-basics-to-production)
 course on devoriales.com, which continues into observability, progressive delivery and a
 capstone platform.
 
