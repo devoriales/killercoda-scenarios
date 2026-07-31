@@ -38,7 +38,8 @@ signals=(
 )
 
 echo ""
-echo "  Setting up Argo CD and Argo Rollouts. This takes four to six minutes."
+echo "  Setting up Argo CD and Argo Rollouts. Usually four to six minutes,"
+echo "  but it depends on how fast this VM pulls images, so give it longer."
 echo "  This one is about seeing what broke, and what runs on top of a sync."
 echo ""
 
