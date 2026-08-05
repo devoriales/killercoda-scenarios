@@ -14,6 +14,9 @@
     },
     {
       "path": "argocd"
+    },
+    {
+      "path": "openbao"
     }
   ]
 }
