@@ -1,0 +1,21 @@
+{
+  "title": "OpenBao Quickstart: Seal, Unseal, and What Delete Really Means",
+  "description": "Deploy OpenBao on Kubernetes, initialize it and watch a sealed instance refuse to serve, unseal it with Shamir key shares, then write a secret, version it, and find out which of delete and destroy you can undo.",
+  "difficulty": "Beginner",
+  "time": "20",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "background.sh",
+      "foreground": "foreground.sh"
+    },
+    "steps": [
+      { "title": "Deploy OpenBao, and meet a pod that is not Ready", "text": "step1/text.md", "verify": "step1/verify.sh" },
+      { "title": "Initialize and unseal with Shamir key shares", "text": "step2/text.md", "verify": "step2/verify.sh" },
+      { "title": "Write a secret, then rotate it and read the old one back", "text": "step3/text.md", "verify": "step3/verify.sh" },
+      { "title": "Delete you can undo, destroy you cannot", "text": "step4/text.md", "verify": "step4/verify.sh" }
+    ],
+    "finish": { "text": "finish.md" }
+  },
+  "backend": { "imageid": "kubernetes-kubeadm-1node" }
+}

@@ -1,0 +1,9 @@
+{
+  "title": "OpenBao Secrets Management",
+  "description": "Hands-on OpenBao: deploy it on Kubernetes, watch it come up sealed and understand why, unseal it with Shamir key shares, then store secrets in K/V v2 and learn which kinds of deletion you can undo. Accompanies the full course at https://devoriales.com/quiz/27/openbao-secrets-management-production-operations-on-kubernetes",
+  "items": [
+    {
+      "path": "scenario-1-openbao-quickstart"
+    }
+  ]
+}
