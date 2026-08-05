@@ -1,5 +1,11 @@
 # OpenBao Quickstart
 
+> **This scenario is part of the full course
+> [OpenBao Secrets Management: Production Operations on Kubernetes](https://devoriales.com/quiz/27/openbao-secrets-management-production-operations-on-kubernetes)
+> on devoriales.com.**
+> The lesson text, architecture diagrams, and knowledge checks live there. This is the
+> browser-based quickstart for Module 1, so you can try OpenBao without installing anything.
+
 A secrets manager's job is not storing secrets. A database can store secrets. The job is
 making the storage layer worthless to whoever steals it.
 
@@ -32,12 +38,9 @@ subject here is the seal lifecycle. The full course deploys with TLS on the list
 the very first boot and explains why "we will add TLS later" is how a secrets manager ends
 up serving plaintext for a year.
 
-The lesson text, architecture diagrams, and knowledge checks live on devoriales.com:
-
-**[OpenBao Secrets Management: Production Operations on Kubernetes](https://devoriales.com/quiz/27/openbao-secrets-management-production-operations-on-kubernetes)**
-
-That course covers the same ground on a local k3d cluster you keep, then goes considerably
-further: auto-unseal, seal migration, Raft clustering, dynamic database credentials, PKI,
-and a capstone that ends with a deliberately triggered seal outage you have to recover from.
+The course linked at the top covers the same ground on a local k3d cluster you keep, then
+goes considerably further: auto-unseal, seal migration, Raft clustering, dynamic database
+credentials, PKI, and a capstone that ends with a deliberately triggered seal outage you
+have to recover from.
 
 Let's get an instance running.
